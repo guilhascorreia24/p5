@@ -229,11 +229,6 @@ int main()
        necessary.*/
   glBindVertexArray(0);
 
-  // uncomment this call to draw in wireframe polygons.
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  // build and compile our shader program
-  // ------------------------------------
-  // vertex shader
   unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
   glCompileShader(vertexShader);
