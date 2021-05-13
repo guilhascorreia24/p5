@@ -1,0 +1,1 @@
+https://www.raywenderlich.com/2604-how-to-export-blender-models-to-opengl-es-part-1-3 vertices + faces, 
