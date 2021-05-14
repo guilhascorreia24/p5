@@ -46,6 +46,7 @@ void Object::getfaces(string s, string del) //parse de um(a) triangulo/face de u
     }
     string k = s.substr(start, end - start);
     indexes.push_back(stoi(k.substr(0, k.find("/"))));
+    //cout << indexes.size() << std::endl;
 }
 
 void Object::setVertexes(const char *f) // obter todos os triangulos de uma figura
