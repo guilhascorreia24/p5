@@ -122,11 +122,14 @@ int main()
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
   Object p;
-  p.setVertex("../../p5/objs/sample.obj");
+  p.setVertexes("../../p5/objs/sample.obj");
+  for(int i=0;i<p.n_vertexes;i++){
+    cout << p.vertices[i].x << " " << p.vertices[i].y << " " << p.vertices[i].z << std::endl;
+  }
   unsigned int VBO;
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
- //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*p.n_vertexes, p.vertices, GL_STATIC_DRAW);
 
   unsigned int EBO;
   glGenBuffers(1, &EBO);
@@ -148,7 +151,7 @@ int main()
   );
 
   // 2nd attribute buffer : colors
-  glEnableVertexAttribArray(1);
+  /*glEnableVertexAttribArray(1);
   glBindBuffer(GL_ARRAY_BUFFER, EBO);
   glVertexAttribPointer(
       1,        // attribute. No particular reason for 1, but
@@ -158,36 +161,22 @@ int main()
       GL_FALSE, // normalized?
       0,        // stride
       (void *)0 // array buffer offset
-  );
+  );*/
 
-  //scaling
   glm::mat4 S = glm::mat4(1.0f);
   S = glm::scale(S, glm::vec3(0.8f, 0.8f, 0.8f));
 
-  //translation
   glm::mat4 T = glm::mat4(1.0f);
-  //T = glm::translate(T, glm::vec3(0.0f, 0.0f, 0.0f));
-
-  //rotation
   glm::mat4 R = glm::mat4(1.0f);
-  //R = glm::rotate(R, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-  //------------------------------------------------------------
-  // Get a handle for our "MVP" uniform
   unsigned int MatrixID = glGetUniformLocation(shaderProgram, "MVP");
 
-  // Projection matrix : 45� Field of View, 4:3 ratio,
-  // display range : 0.1 unit <-> 100 units
   glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-  // View camera matrix
   glm::mat4 View = glm::lookAt(
       glm::vec3(4, 4, 3), // Camera is at (4,3,-3), in World Space
       glm::vec3(0, 0, 0), // and looks at the origin
       glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
   );
-  // Model matrix : an identity matrix (model will be at the origin)
   glm::mat4 Model = glm::mat4(1.0f);
-  // Our ModelViewProjection : multiplication of our 3 matrices
-  // Remember, matrix multiplication is the other way around
   glm::mat4 MVP = Projection * View * Model;
   printf("mvp\n");
   std::cout << MVP << std::endl;
@@ -212,7 +201,7 @@ int main()
     glBindVertexArray(VAO);
     // seeing as we only have a single VAO there's no need to bind
     // it every time, but we'll do so to keep things a bit more organized
-    glDrawArrays(GL_TRIANGLES, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, p.n_vertexes);
 
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
@@ -220,21 +209,14 @@ int main()
     glfwPollEvents();
   }
 
-  // optional: de-allocate all resources once they've outlived their purpose:
-  // ------------------------------------------------------------------------
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteProgram(shaderProgram);
 
-  // glfw: terminate, clearing all previously allocated GLFW resources.
-  // ------------------------------------------------------------------
   glfwTerminate();
   return 0;
 }
 
-/* process all input: query GLFW whether relevant keys are pressed/released 
-this frame and react accordingly 
------------------------------------------------------------------------*/
 
 void processInput(GLFWwindow *window)
 {
