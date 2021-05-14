@@ -5,8 +5,10 @@ using namespace std;
 #include "Object.h"
 #include <stdlib.h>
 #include <vector>
-std::vector<int> indexes;
-struct Vertex Object::getvertex(string s, string del = " ")
+std::vector<int> indexes; //indice dos vertices
+
+
+struct Vertex Object::getvertex(string s, string del = " ") //parse de uma coordenada
 {
     int start = 0;
     int end = s.find(del);
@@ -29,7 +31,7 @@ struct Vertex Object::getvertex(string s, string del = " ")
     return v;
 }
 
-void Object::getfaces(string s, string del)
+void Object::getfaces(string s, string del) //parse de um(a) triangulo/face de um objecto
 {
     int start = 0;
     int end = s.find(del);
@@ -44,10 +46,9 @@ void Object::getfaces(string s, string del)
     }
     string k = s.substr(start, end - start);
     indexes.push_back(stoi(k.substr(0, k.find("/"))));
-    //cout << indexes.size() << std::endl;
 }
 
-void Object::setVertexes(const char *f)
+void Object::setVertexes(const char *f) // obter todos os triangulos de uma figura
 {
     ifstream fp(f);
     if (!fp.is_open())
@@ -66,7 +67,6 @@ void Object::setVertexes(const char *f)
             if (line.substr(0, line.find(" ")).compare("v") == 0)
             {
                 v[i++] = this->getvertex(line, " ");
-                //cout << v[i - 1].x << " " << v[i - 1].y << " " << v[i - 1].z << std::endl;
             }
             if (line.substr(0, line.find(" ")).compare("f") == 0)
             {
@@ -78,10 +78,7 @@ void Object::setVertexes(const char *f)
         this->vertices = (struct Vertex *)malloc( (int)indexes.size() * sizeof(struct Vertex));
         for (int i = 0; i < indexes.size(); i++)
         {
-            //cout << indexes.at(i)-1 << std::endl;
-            //cout << v[indexes.at(i)-1].x << " " << v[indexes.at(i)-1].y << " " << vf[indexes.at(i)-1].z << std::endl;
             this->vertices[i]=v[indexes.at(i)-1];
-            //cout << vf[i].x << " " << vf[i].y << " " << vf[i].z << std::endl;
         }
         this->n_vertexes=indexes.size();
         

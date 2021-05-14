@@ -121,15 +121,16 @@ int main()
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
-  Object p;
-  p.setVertexes("../../p5/objs/sample.obj");
-  for(int i=0;i<p.n_vertexes;i++){
-    cout << p.vertices[i].x << " " << p.vertices[i].y << " " << p.vertices[i].z << std::endl;
-  }
+
+  // coloquem os objectos aqui (a setvertexes pode ter erros)
+  Object sample;
+  sample.setVertexes("../../p5/objs/sample.obj");
+
+
   unsigned int VBO;
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*p.n_vertexes, p.vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*sample.n_vertexes, sample.vertices, GL_STATIC_DRAW);
 
   unsigned int EBO;
   glGenBuffers(1, &EBO);
@@ -172,7 +173,7 @@ int main()
 
   glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
   glm::mat4 View = glm::lookAt(
-      glm::vec3(4, 4, 3), // Camera is at (4,3,-3), in World Space
+      glm::vec3(4, 4, 9), // Camera is at (4,3,-3), in World Space
       glm::vec3(0, 0, 0), // and looks at the origin
       glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
   );
@@ -201,7 +202,7 @@ int main()
     glBindVertexArray(VAO);
     // seeing as we only have a single VAO there's no need to bind
     // it every time, but we'll do so to keep things a bit more organized
-    glDrawArrays(GL_TRIANGLES, 0, p.n_vertexes);
+    glDrawArrays(GL_TRIANGLES, 0, sample.n_vertexes);
 
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
