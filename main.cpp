@@ -17,10 +17,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 float radius = 1.0f;
 int cam = -1;
-glm::mat4 MVP;
-glm::mat4 View = glm::lookAt(glm::vec3(0, 0, 20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-Object level;
-Block block;
+glm::mat4 View = glm::lookAt(glm::vec3(0, 0, -20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 // Input vertex data, different for all executions of this shader.
 // Output data color, will be interpolated for each fragment.
 const char *vertexShaderSource = "#version 330 core\n"
@@ -128,6 +125,8 @@ int main()
   glBindVertexArray(VAO);
 
   // coloquem os objectos aqui (a setvertexes pode ter erros)
+  Block block;
+  Object level;
   block.setVertexes("../../p5/objs/sample.obj");
   level.setVertexes("../../p5/objs/nivel1.obj");
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -144,8 +143,6 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, EBO);
   //glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
-  //------------------------------------------------------------
-  // 1rst attribute buffer : vertices
   glEnableVertexAttribArray(0);
 
   glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
@@ -154,11 +151,14 @@ int main()
   block.MVP = Projection * View * Model;
   level.MVP = Projection * View * Model;
 
-  glm::mat4 T = glm::mat4(1.0f);
-  T = glm::translate(T, glm::vec3(0.0f, 3.0f, 0.0f));
 
-  block.MVP = block.MVP * inverse(T);
+  glm::mat4 T = glm::mat4(1.0f);
+  T = glm::translate(T, glm::vec3(0.0f, -1.0f, 0.0f));
+
+  //block.MVP = block.MVP * inverse(T);
   level.MVP = level.MVP * T;
+  cout << level.MVP << std::endl;
+  cout << block.MVP << std::endl;
 
   while (!glfwWindowShouldClose(window))
   {
@@ -166,28 +166,21 @@ int main()
     unsigned int MatrixID = glGetUniformLocation(shaderProgram, "MVP");
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-    // Enable depth test
     glEnable(GL_DEPTH_TEST);
-    // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
-
-    // also clear the depth buffer now!
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // draw our first triangle: using shader program
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    // seeing as we only have a single VAO there's no need to bind
-    // it every time, but we'll do so to keep things a bit more organized
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &block.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &block.MVP[0][0]);
     block.Falling();
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glDrawArrays(GL_TRIANGLES, 0, level.n_vertexes);
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);
+    //glDrawArrays(GL_TRIANGLES, 0, level.n_vertexes);
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
