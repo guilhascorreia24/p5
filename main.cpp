@@ -151,12 +151,13 @@ int main()
   block.MVP = Projection * View * Model;
   level.MVP = Projection * View * Model;
 
-
   glm::mat4 T = glm::mat4(1.0f);
-  T = glm::translate(T, glm::vec3(0.0f, -1.0f, 0.0f));
+  T = glm::translate(T, glm::vec3(0.0f, 3.0f, 0.0f));
 
-  //block.MVP = block.MVP * inverse(T);
-  level.MVP = level.MVP * T;
+  block.MVP = block.MVP *T;
+  level.MVP= level.MVP*inverse(T);
+
+  
   cout << level.MVP << std::endl;
   cout << block.MVP << std::endl;
 
@@ -172,15 +173,15 @@ int main()
 
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &block.MVP[0][0]);
+    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &block.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
     block.Falling();
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);
+    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    //glDrawArrays(GL_TRIANGLES, 0, level.n_vertexes);
+    glDrawArrays(GL_TRIANGLES, 0, level.n_vertexes);
     glfwSwapBuffers(window);
     glfwPollEvents();
   }

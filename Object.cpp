@@ -85,3 +85,10 @@ void Object::setVertexes(const char *f) // obter todos os triangulos de uma figu
         
     }
 }
+
+struct Vertex Object::getCenterObject(){
+    struct Vertex c;
+    c.x=this->MVP[3][0];
+    c.y=this->MVP[3][1];
+    c.z=this->MVP[3][2];
+}

@@ -7,5 +7,5 @@ using namespace std;
 
 void Block::Falling(){
     float Fritction=0.01,Gravity=9.8;
-    this->MVP[3][0]-=Fritction;
+    this->MVP[3][1]-=Fritction;
 }

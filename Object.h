@@ -13,11 +13,11 @@ struct Vertex
 {
     float x, y, z;
 };
-
 class Object
 {
 public:
     void setVertexes(const char *f);
+    struct Vertex getCenterObject();
 
     struct Vertex *vertices;
     int n_vertexes;
