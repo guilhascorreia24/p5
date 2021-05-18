@@ -1,4 +1,4 @@
-add_executable(p5 "main.cpp;Object.cpp;Block.cpp")
+add_executable(p5 "main.cpp;Object.cpp;Block.cpp;Plataform.cpp")
 target_link_libraries(p5
 LINK_PUBLIC
 glfw

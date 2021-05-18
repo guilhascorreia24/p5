@@ -7,8 +7,8 @@
 #include <glm/gtx/io.hpp>
 
 #include <iostream>
-#include "Object.h"
-
+#include "Block.h"
+#include "Plataform.h"
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void getNormalizedCoords(double xpos, double ypos);
@@ -17,7 +17,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 float radius = 1.0f;
 int cam = -1;
-glm::mat4 View = glm::lookAt(glm::vec3(4, 0, -20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+glm::mat4 View = glm::lookAt(glm::vec3(4, 15, -20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 // Input vertex data, different for all executions of this shader.
 // Output data color, will be interpolated for each fragment.
 const char *vertexShaderSource = "#version 330 core\n"
@@ -125,13 +125,12 @@ int main()
   glBindVertexArray(VAO);
 
   // coloquem os objectos aqui (a setvertexes pode ter erros)
-  Block block;
-  Object level;
-  block.setVertexes("../../p5/objs/stoneBlock.obj");
-  level.setVertexes("../../p5/objs/level1.obj");
+  Block block("../../p5/objs/stoneBlock.obj");
+  Plataform level("../../p5/objs/level1.obj");
+
   block.setTexture(0.8, 0.8, 0.8);
   level.setTexture(0.2, 0.2, 0.2);
-  printf("oi\n");
+  //printf("oi\n");
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   unsigned int VBO[2];
@@ -151,7 +150,7 @@ int main()
   level.MVP = Projection * View * Model;
 
   glm::mat4 T = glm::mat4(1.0f);
-  T = glm::translate(T, glm::vec3(0.0f, 3.0f, 0.0f))-glm::mat4(1);
+  T = glm::translate(T, glm::vec3(0.0f, 8.0f, 0.0f))-glm::mat4(1);
 
   block.MVP = block.MVP + T;
   level.MVP = level.MVP - T;
@@ -184,7 +183,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
 
-    if(!block.checkColider(level))
+    //if(!block.checkColider(level))
       block.Falling(glfwGetTime());
 
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);

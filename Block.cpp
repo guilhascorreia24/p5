@@ -2,8 +2,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
-#include "Object.h"
+#include "Block.h"
 using namespace std;
+Block::Block(const char *f){
+    this->setVertexes(f);
+}
 
 void Block::Falling(float t_now){
     //cout << t_now << std::endl;

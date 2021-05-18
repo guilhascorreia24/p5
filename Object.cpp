@@ -6,33 +6,13 @@ using namespace std;
 #include <stdlib.h>
 #include <vector>
 #include <limits>
+#include <math.h>
 //std::vector<int> indexes; //indice dos vertices
 
-struct Vertex Object::min_point(){
-    float xMin=INT_MAX,yMin=INT_MAX,zMin=INT_MAX;
-    struct Vertex min;
-    for(int i=0;i<this->n_vertexes;i++){
-        struct Vertex v=this->vertex[i];
-        if(v.x<=xMin && v.y<=yMin && v.z<=zMin){
-            min=this->vertex[i];
-        }
-    }
-    cout << min.x << " " << min.y << " "<< min.z << std::endl;
-    return min;
-
-}struct Vertex Object::max_point(){
-    float xMin=INT_MIN,yMin=INT_MIN,zMin=INT_MIN;
-    struct Vertex max;
-    for(int i=0;i<this->n_vertexes;i++){
-        struct Vertex v=this->vertex[i];
-        if(v.x>=xMin && v.y>=yMin && v.z>=zMin){
-            max=this->vertex[i];
-        }
-    }
-    cout << max.x << " " << max.y << " "<< max.z << std::endl;
-    return max;
-}
-
+    struct Vertex
+    {
+        float x, y, z;
+    };
 struct Vertex Object::getvertex(string s, string del = " ") //parse de uma coordenada
 {
     int start = 0;
@@ -119,13 +99,11 @@ struct Vertex Object::getCenterObject(){
     return c;
 }
 
+
 bool Object::checkColider(Object b){
-    printf("first\n");
-    struct Vertex min=this->min_point();
-    struct Vertex max=this->max_point();
-    printf("second\n");
-    bool collisonY=min.y<=b.max_point().y;
-    return collisonY;
+    bool collsion=false;
+
+    return collsion;
 }
 
 void Object::setTexture(float r,float g,float b){
