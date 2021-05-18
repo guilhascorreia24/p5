@@ -5,7 +5,12 @@
 #include "Object.h"
 using namespace std;
 
-void Block::Falling(){
-    float Fritction=0.01,Gravity=9.8;
-    this->MVP[3][1]-=Fritction;
+void Block::Falling(float t_now){
+    //cout << t_now << std::endl;
+    float dt=t_now-this->time;
+    float acc=-0.0001;
+    this->vel+=acc*dt;
+    this->MVP[3][1]+=this->vel*dt;
+
 }
+
