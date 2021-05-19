@@ -1,18 +1,19 @@
 #include <iostream>
+#include <set>
+#include <utility>
 #include <string>
-using namespace std;
 #include <fstream>
 #include "Object.h"
 #include <stdlib.h>
 #include <vector>
+#include <set>
+#include <list>
 #include <limits>
 #include <math.h>
+#include <algorithm>
+using namespace std;
 //std::vector<int> indexes; //indice dos vertices
 
-    struct Vertex
-    {
-        float x, y, z;
-    };
 struct Vertex Object::getvertex(string s, string del = " ") //parse de uma coordenada
 {
     int start = 0;
@@ -54,7 +55,11 @@ void Object::getfaces(string s, string del) //parse de um(a) triangulo/face de u
     //cout << indexes.size() << std::endl;
 }
 
-void Object::setVertexes(const char *f) // obter todos os triangulos de uma figura
+void Object::setBodyCollider(){
+
+}
+
+void Object::setVertexes(const char *f, struct Vertex *v) // obter todos os triangulos de uma figura
 {
     ifstream fp(f);
     if (!fp.is_open())
@@ -65,14 +70,14 @@ void Object::setVertexes(const char *f) // obter todos os triangulos de uma figu
     }
     else
     {
-        struct Vertex *v = (struct Vertex *)malloc(100000 * sizeof(struct Vertex));
         int i = 0;
         string line;
         while (getline(fp, line))
         {
             if (line.substr(0, line.find(" ")).compare("v") == 0)
             {
-                v[i++] = this->getvertex(line, " ");
+                v[i] = this->getvertex(line, " ");
+                i++;
             }
             if (line.substr(0, line.find(" ")).compare("f") == 0)
             {
@@ -80,38 +85,51 @@ void Object::setVertexes(const char *f) // obter todos os triangulos de uma figu
             }
         }
         fp.close();
-        //cout << indexes.size() << std::endl;
-        this->vertex = (struct Vertex *)malloc( (int)this->indexes.size() * sizeof(struct Vertex));
+        this->vertex = (struct Vertex *)malloc((int)this->indexes.size() * sizeof(struct Vertex));
         for (int i = 0; i < indexes.size(); i++)
         {
-            this->vertex[i]=v[this->indexes.at(i)-1];
+            this->vertex[i] = v[this->indexes.at(i) - 1];
+            Y.insert(vertex[i].y);
+            X.insert(vertex[i].x);
+            Z.insert(vertex[i].z);
         }
-        this->n_vertexes=this->indexes.size();
-        cout << this->n_vertexes << std::endl;
+        this->n_vertexes = this->indexes.size();
+        cout << X.size() << " " << Y.size() << " " << Z.size() << std::endl;
     }
 }
 
-struct Vertex Object::getCenterObject(){
+struct Vertex Object::getCenterObject()
+{
     struct Vertex c;
-    c.x=this->MVP[3][0];
-    c.y=this->MVP[3][1];
-    c.z=this->MVP[3][2];
+    c.x = this->MVP[3][0];
+    c.y = this->MVP[3][1];
+    c.z = this->MVP[3][2];
     return c;
 }
 
-
-bool Object::checkColider(Object b){
-    bool collsion=false;
-
-    return collsion;
+void Object::setTexture(float r, float g, float b)
+{
+    this->colors = (float *)malloc(this->n_vertexes * 3 * sizeof(float));
+    int c = 0;
+    for (int i = 0; i < this->n_vertexes; i++)
+    {
+        this->colors[c++] = r;
+        this->colors[c++] = g;
+        this->colors[c++] = b;
+    }
 }
 
-void Object::setTexture(float r,float g,float b){
-    this->colors=(float *)malloc(this->n_vertexes*3*sizeof(float));
-    int c=0;
-    for(int i=0;i<this->n_vertexes;i++){
-        this->colors[c++]=r;
-        this->colors[c++]=g;
-        this->colors[c++]=b;
-    }
+string Object::ToString()
+{
+    string res = to_string(this->MVP[3][0]) + " " + to_string(this->MVP[3][1]) + " " + to_string(this->MVP[3][2]);
+    return res + "\n";
+}
+
+bool Object::checkCollide(Object o)
+{
+    return false;
+}
+
+void Object::setBodyCollider(){
+    
 }

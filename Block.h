@@ -21,5 +21,7 @@ public:
     //typedef Object super;
     Block(const char *f);
     void Falling(float t);
+    
+
 };
 #endif

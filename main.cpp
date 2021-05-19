@@ -128,8 +128,7 @@ int main()
   Block block("../../p5/objs/stoneBlock.obj");
   Plataform level("../../p5/objs/level1.obj");
 
-  block.setTexture(0.8, 0.8, 0.8);
-  level.setTexture(0.2, 0.2, 0.2);
+
   //printf("oi\n");
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -183,7 +182,6 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
 
-    //if(!block.checkColider(level))
       block.Falling(glfwGetTime());
 
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);
