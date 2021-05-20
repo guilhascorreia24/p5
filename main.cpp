@@ -17,7 +17,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 float radius = 1.0f;
 int cam = -1;
-glm::mat4 View = glm::lookAt(glm::vec3(4, 15, -20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+glm::mat4 View = glm::lookAt(glm::vec3(4, 0, -20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 // Input vertex data, different for all executions of this shader.
 // Output data color, will be interpolated for each fragment.
 const char *vertexShaderSource = "#version 330 core\n"
@@ -127,7 +127,7 @@ int main()
   // coloquem os objectos aqui (a setvertexes pode ter erros)
   Block block("../../p5/objs/stoneBlock.obj");
   Plataform level("../../p5/objs/level1.obj");
-
+  std::vector<Object> objs;
 
   //printf("oi\n");
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -149,11 +149,12 @@ int main()
   level.MVP = Projection * View * Model;
 
   glm::mat4 T = glm::mat4(1.0f);
-  T = glm::translate(T, glm::vec3(0.0f, 8.0f, 0.0f))-glm::mat4(1);
-
-  block.MVP = block.MVP + T;
-  level.MVP = level.MVP - T;
-
+  T = glm::translate(T, glm::vec3(0.0f, 8.0f, 0.0f)) - glm::mat4(1);
+  //cout<< block.min.y<<std::endl;
+  block.Translation(T);
+  level.Translation(-T);
+  objs.push_back(block);
+  objs.push_back(level);
   while (!glfwWindowShouldClose(window))
   {
     unsigned int MatrixID = glGetUniformLocation(shaderProgram, "MVP");
@@ -181,7 +182,7 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
-
+    if (!block.checkCollide(objs))
       block.Falling(glfwGetTime());
 
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);

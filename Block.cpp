@@ -19,4 +19,10 @@ void Block::Falling(float t_now)
     float acc = -0.0001;
     this->vel += acc * dt;
     this->MVP[3][1] += this->vel * dt;
+    for(struct Vertex v:bodyCollider){
+        v.y+=this->vel * dt;
+    }
+    max.y+=this->vel * dt;
+    min.y+=this->vel * dt;
+
 }

@@ -16,12 +16,23 @@ using namespace std;
 struct Vertex
 {
     float x, y, z;
-    bool operator == (struct Vertex const& b) const{
+    bool operator==(struct Vertex const &b) const
+    {
         //cout<<b.x<< " "<<this->x<< std::endl;
-        return this->x==b.x && this->y==b.y && this->z==b.z;
+        return this->x == b.x && this->y == b.y && this->z == b.z;
     }
-    inline operator < (const Vertex& a) const{
-        return x<a.x;
+    inline operator<(const Vertex &a) const
+    {
+        if (x < a.x)
+        {
+            return true;
+        }
+        if (x == a.x && y < a.y)
+        {
+            return true;
+        }
+        if(x == a.x && y == a.y && z<a.z) return true;
+        return false;
     }
 };
 class Object
@@ -29,10 +40,13 @@ class Object
 public:
     struct Vertex *vertex;
     std::vector<struct Vertex> bodyCollider;
+    string s;
+       struct Vertex max,min;
 
     struct Vertex getCenterObject();
     string ToString();
-    bool checkCollide(Object o);
+    bool checkCollide(std::vector<Object> o);
+    void Translation(glm::mat4 T);
 
     int n_vertexes;
     float *colors;
@@ -44,9 +58,8 @@ private:
     std::vector<int> indexes;
 
 protected:
-    std::set<float> Y,X,Z;
     void setVertexes(const char *f, struct Vertex *v);
     void setTexture(float r, float g, float b);
-    void setBodyCollider(); 
+    void setBodyCollider();
 };
 #endif
