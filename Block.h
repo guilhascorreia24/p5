@@ -20,7 +20,9 @@ class Block : public Object
 public:
     //typedef Object super;
     Block(const char *f);
+    void block_reset();
     void Falling(float t);
+    void Moves(int key);
     
 
 };

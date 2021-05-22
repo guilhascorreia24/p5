@@ -140,9 +140,9 @@ bool Object::checkCollide(std::vector<Object> l)
     {
         if (o.id != id)
         {
-            cout<<(height/2)+(o.height/2)<<std::endl;
+           // cout<< MVP << " "<< o.MVP <<std::endl;
             glm::mat4 t=Projection*View*glm::translate(glm::mat4(1), glm::vec3(inicial_pos[0],(height/2)+(o.height/2),inicial_pos[2]));
-            cout<<MVP<<std::endl;
+           // cout<<t<<std::endl;
             if(MVP[3][1]-o.MVP[3][1]<t[3][1]){
                 return true;
             }

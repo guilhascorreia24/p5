@@ -19,6 +19,7 @@ class Plataform : public Object
 public:
     //typedef Object super;
     Plataform(const char *f);
+    Plataform();
     //void setBodyCollider(); 
 };
 #endif

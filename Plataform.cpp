@@ -19,4 +19,7 @@ Plataform::Plataform(const char *f)
     height=max.y-min.y;
     width=max.z-min.z;
 }
+Plataform::Plataform(){
+    
+}
 

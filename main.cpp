@@ -11,12 +11,14 @@
 #include "Plataform.h"
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
-void getNormalizedCoords(double xpos, double ypos);
+void reset(GLFWwindow *window, int key, int scancode, int action, int mods);
+void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-float radius = 1.0f;
-int cam = -1;
+const unsigned int SCR_WIDTH = 1200;
+const unsigned int SCR_HEIGHT = 800;
+Block block("../../p5/objs/stoneBlock.obj");
+Plataform level("../../p5/objs/level1.obj");
+std::vector<Object> objs;
 glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 // Input vertex data, different for all executions of this shader.
@@ -126,11 +128,8 @@ int main()
   glBindVertexArray(VAO);
   int i = 0;
   // coloquem os objectos aqui (a setvertexes pode ter erros)
-  Block block("../../p5/objs/stoneBlock.obj");
   block.id = i++;
-  Plataform level("../../p5/objs/level1.obj");
   level.id = i++;
-  std::vector<Object> objs;
 
   //printf("oi\n");
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -149,11 +148,11 @@ int main()
 
   block.MVP = Projection * View * Model;
   level.MVP = Projection * View * Model;
-  block.inicial_pos=glm::vec3(-5.0353,1.7833,-2.1094);
-  block.MVP = block.MVP * glm::translate(glm::mat4(1), block.inicial_pos);
-  cout << block.MVP << " "<< level.MVP << std::endl;
-  objs.push_back(block);
+  block.inicial_pos = glm::vec3(-4.85, 1.7833, -1.9033);
+  objs.clear();
+  block.block_reset();
   objs.push_back(level);
+  objs.push_back(block);
   bool colide = false;
   while (!glfwWindowShouldClose(window))
   {
@@ -194,7 +193,6 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
 
-
     for (int i = 0; i < 2; i++)
     {
       glDeleteBuffers(1, &EBO[i]);
@@ -221,9 +219,30 @@ void processInput(GLFWwindow *window)
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
+  glfwSetKeyCallback(window, reset);
+  glfwSetKeyCallback(window, moveBlock);
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
   glViewport(0, 0, width, height);
+}
+
+void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+  if ((key == GLFW_KEY_DOWN || key == GLFW_KEY_LEFT || key == GLFW_KEY_UP || key == GLFW_KEY_RIGHT) && action == GLFW_PRESS)
+  {
+    block.Moves(key);
+  }
+}
+void reset(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+  if (key == GLFW_KEY_R && action == GLFW_PRESS)
+  {
+    printf("sadh\n");
+    objs.clear();
+    block.block_reset();
+    objs.push_back(level);
+    objs.push_back(block);
+  }
 }
