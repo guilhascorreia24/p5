@@ -17,7 +17,8 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 float radius = 1.0f;
 int cam = -1;
-glm::mat4 View = glm::lookAt(glm::vec3(4, 0, -20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 // Input vertex data, different for all executions of this shader.
 // Output data color, will be interpolated for each fragment.
 const char *vertexShaderSource = "#version 330 core\n"
@@ -123,10 +124,12 @@ int main()
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
-
+  int i = 0;
   // coloquem os objectos aqui (a setvertexes pode ter erros)
   Block block("../../p5/objs/stoneBlock.obj");
+  block.id = i++;
   Plataform level("../../p5/objs/level1.obj");
+  level.id = i++;
   std::vector<Object> objs;
 
   //printf("oi\n");
@@ -142,19 +145,16 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * level.n_vertexes, level.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-  glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
   glm::mat4 Model = glm::mat4(1.0f);
 
   block.MVP = Projection * View * Model;
   level.MVP = Projection * View * Model;
-
-  glm::mat4 T = glm::mat4(1.0f);
-  T = glm::translate(T, glm::vec3(0.0f, 8.0f, 0.0f)) - glm::mat4(1);
-  //cout<< block.min.y<<std::endl;
-  block.Translation(T);
-  level.Translation(-T);
+  block.inicial_pos=glm::vec3(-5.0353,1.7833,-2.1094);
+  block.MVP = block.MVP * glm::translate(glm::mat4(1), block.inicial_pos);
+  cout << block.MVP << " "<< level.MVP << std::endl;
   objs.push_back(block);
   objs.push_back(level);
+  bool colide = false;
   while (!glfwWindowShouldClose(window))
   {
     unsigned int MatrixID = glGetUniformLocation(shaderProgram, "MVP");
@@ -175,15 +175,9 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, level.n_vertexes * 3 * sizeof(float), level.colors, GL_STATIC_DRAW);
     glEnableVertexAttribArray(1);
 
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &block.MVP[0][0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, EBO[0]);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
-    if (!block.checkCollide(objs))
+    if (!colide)
       block.Falling(glfwGetTime());
+    colide = block.checkCollide(objs);
 
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
@@ -192,6 +186,14 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, level.n_vertexes);
+    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &block.MVP[0][0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, EBO[0]);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDrawArrays(GL_TRIANGLES, 0, block.n_vertexes);
+
 
     for (int i = 0; i < 2; i++)
     {

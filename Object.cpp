@@ -79,16 +79,6 @@ void Object::setVertexes(const char *f, struct Vertex *v) // obter todos os tria
             {
                 this->getfaces(line, " ");
             }
-            if (line.substr(0, line.find(" ")).compare("mtllib") == 0)
-            {
-                string del = " ";
-                int start = 0;
-                int end = line.find(del);
-                start = end + del.size();
-                end = line.find(del, start);
-                s = line.substr(start, end - start);
-                cout << s << std::endl;
-            }
         }
         fp.close();
         std::set<float> Y, X, Z;
@@ -107,6 +97,7 @@ void Object::setVertexes(const char *f, struct Vertex *v) // obter todos os tria
         min.y = *Y.begin();
         min.z = *Z.begin();
         this->n_vertexes = this->indexes.size();
+
         //cout << X.size() << " " << Y.size() << " " << Z.size() << std::endl;
     }
 }
@@ -124,11 +115,12 @@ void Object::setTexture(float r, float g, float b)
 {
     this->colors = (float *)malloc(this->n_vertexes * 3 * sizeof(float));
     int c = 0;
+    //float co=static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     for (int i = 0; i < this->n_vertexes; i++)
     {
-        this->colors[c++] = r;
-        this->colors[c++] = g;
-        this->colors[c++] = b;
+        this->colors[c++] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        this->colors[c++] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        this->colors[c++] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     }
 }
 
@@ -140,16 +132,18 @@ string Object::ToString()
 
 bool Object::checkCollide(std::vector<Object> l)
 {
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+    glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
     sort(this->bodyCollider.begin(), this->bodyCollider.end());
     for (Object o : l)
     {
-        if (o.s != s)
+        if (o.id != id)
         {
-            cout << o.MVP[3][1] << MVP[3][1]<<std::endl;
-            cout << o.max.y << " "<<min.y << std::endl;
-            // exit(1);
-            if (min.y-o.max.y < 0)
-            {
+            cout<<(height/2)+(o.height/2)<<std::endl;
+            glm::mat4 t=Projection*View*glm::translate(glm::mat4(1), glm::vec3(inicial_pos[0],(height/2)+(o.height/2),inicial_pos[2]));
+            cout<<MVP<<std::endl;
+            if(MVP[3][1]-o.MVP[3][1]<t[3][1]){
                 return true;
             }
         }
@@ -184,19 +178,4 @@ void Object::setBodyCollider()
     {
         bodyCollider.push_back(p[i]);
     }
-}
-
-void Object::Translation(glm::mat4 T)
-{
-    cout << T << std::endl;
-    MVP = MVP + T;
-    for (struct Vertex v : bodyCollider)
-    {
-        v.x+=T[3][0];
-        v.y+=T[3][1];
-        v.z+=T[3][2];
-    }
-    max.x+=T[3][0];max.y+=T[3][1];max.z+=T[3][2];
-    min.x+=T[3][0];min.y+=T[3][1];min.z+=T[3][2];
-
 }

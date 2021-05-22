@@ -31,7 +31,8 @@ struct Vertex
         {
             return true;
         }
-        if(x == a.x && y == a.y && z<a.z) return true;
+        if (x == a.x && y == a.y && z < a.z)
+            return true;
         return false;
     }
 };
@@ -40,17 +41,15 @@ class Object
 public:
     struct Vertex *vertex;
     std::vector<struct Vertex> bodyCollider;
-    string s;
-       struct Vertex max,min;
+    int id, n_vertexes;
+    float *colors;
+    glm::mat4 MVP;
+    glm::vec3 inicial_pos;
+    float height,width,length;
 
     struct Vertex getCenterObject();
     string ToString();
     bool checkCollide(std::vector<Object> o);
-    void Translation(glm::mat4 T);
-
-    int n_vertexes;
-    float *colors;
-    glm::mat4 MVP;
 
 private:
     void getfaces(string s, string del);
@@ -58,6 +57,7 @@ private:
     std::vector<int> indexes;
 
 protected:
+    struct Vertex max, min;
     void setVertexes(const char *f, struct Vertex *v);
     void setTexture(float r, float g, float b);
     void setBodyCollider();

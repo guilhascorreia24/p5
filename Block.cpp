@@ -1,3 +1,5 @@
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,6 +13,9 @@ Block::Block(const char *f)
     this->setVertexes(f,v);
     this->setTexture(0.8, 0.8, 0.8);
     this->setBodyCollider();
+    length=max.x-min.x;
+    height=max.y-min.y;
+    width=max.z-min.z;
 }
 
 void Block::Falling(float t_now)
@@ -18,11 +23,7 @@ void Block::Falling(float t_now)
     float dt = t_now - this->time;
     float acc = -0.0001;
     this->vel += acc * dt;
-    this->MVP[3][1] += this->vel * dt;
-    for(struct Vertex v:bodyCollider){
-        v.y+=this->vel * dt;
-    }
-    max.y+=this->vel * dt;
-    min.y+=this->vel * dt;
-
+    //float p = MVP[3][1]+this->vel * dt;
+    glm::mat4 f=glm::translate(glm::mat4(1),glm::vec3(0,this->vel * dt,0));
+    MVP=MVP*f;
 }
