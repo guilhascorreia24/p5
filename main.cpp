@@ -9,10 +9,11 @@
 #include <iostream>
 #include "Block.h"
 #include "Plataform.h"
+#include "Scenery.h"
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
-void reset(GLFWwindow *window, int key, int scancode, int action, int mods);
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
+void reposition(glm::vec3 v, Block *b, Plataform p);
 // settings
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
@@ -21,8 +22,7 @@ Plataform level("../../p5/objs/level1.obj");
 std::vector<Object> objs;
 glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-// Input vertex data, different for all executions of this shader.
-// Output data color, will be interpolated for each fragment.
+
 const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
                                  "layout (location = 1) in vec3 vertexColor;\n"
@@ -105,8 +105,6 @@ int main()
               << infoLog << std::endl;
   }
 
-  // link shaders : puts together the vertex and the fragment shaders
-  // into a "shader program object"
   unsigned int shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
@@ -126,13 +124,6 @@ int main()
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
-  int i = 0;
-  // coloquem os objectos aqui (a setvertexes pode ter erros)
-  block.id = i++;
-  level.id = i++;
-
-  //printf("oi\n");
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   unsigned int VBO[2];
   unsigned int EBO[2];
@@ -148,11 +139,16 @@ int main()
 
   block.MVP = Projection * View * Model;
   level.MVP = Projection * View * Model;
-  block.inicial_pos = glm::vec3(-4.85, 1.7833, -1.9033);
-  objs.clear();
+  Scenery level1(Projection * View * Model);
+
+  block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   block.block_reset();
-  objs.push_back(level);
-  objs.push_back(block);
+  reposition(block.inicial_pos, &block, level);
+  block.block_reset();
+
+  //level1.addObj(block);
+  level1.addPlataform(level);
+
   bool colide = false;
   while (!glfwWindowShouldClose(window))
   {
@@ -174,10 +170,6 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, level.n_vertexes * 3 * sizeof(float), level.colors, GL_STATIC_DRAW);
     glEnableVertexAttribArray(1);
 
-    if (!colide)
-      block.Falling(glfwGetTime());
-    colide = block.checkCollide(objs);
-
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
@@ -197,6 +189,9 @@ int main()
     {
       glDeleteBuffers(1, &EBO[i]);
     }
+    if (!colide)
+      block.Falling(glfwGetTime());
+    colide = block.Collisions(level1.objs);
     //cout << level.MVP << std::endl;
     //cout << block.MVP << std::endl;
     glfwSwapBuffers(window);
@@ -219,7 +214,6 @@ void processInput(GLFWwindow *window)
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
-  glfwSetKeyCallback(window, reset);
   glfwSetKeyCallback(window, moveBlock);
 }
 
@@ -234,15 +228,29 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   {
     block.Moves(key);
   }
-}
-void reset(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
   if (key == GLFW_KEY_R && action == GLFW_PRESS)
   {
-    printf("sadh\n");
     objs.clear();
     block.block_reset();
     objs.push_back(level);
     objs.push_back(block);
   }
+}
+void reposition(glm::vec3 v, Block *b, Plataform p)
+{
+  double dist = INT_MAX;
+  Block t = Block();
+  for (Block o : p.blocks)
+  {
+    if (o.distanceObjects(b) < dist)
+    {
+      dist = o.distanceObjects(b);
+      t = o;
+    }
+  }
+  cout << t.inicial_pos << std::endl;
+  b->inicial_pos = t.inicial_pos;
+  b->inicial_pos[1] = 5;
+  b->atual=b->inicial_pos;
+  cout << b->inicial_pos << std::endl;
 }

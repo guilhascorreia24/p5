@@ -12,14 +12,19 @@ using namespace std;
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
 #include <vector>
+#include "Block.h"
 #include "Object.h"
-class Plataform : public Object
+
+class Plataform: public Object
 {
 
 public:
-    //typedef Object super;
+    std::vector<Block> blocks; 
     Plataform(const char *f);
-    Plataform();
-    //void setBodyCollider(); 
+
+    private:
+        double distanceOther(glm::mat4 t);
+        void superiorFaces(struct Faces f);
+        void setBlocks();
 };
 #endif
