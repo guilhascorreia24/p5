@@ -15,7 +15,7 @@
 using namespace std;
 //std::vector<int> indexes; //indice dos vertices
 
-struct Vertex Object::getvertex(string s, string del = " ") //parse de uma coordenada
+struct Vertex Object::getvertex(string s, string del) //parse de uma coordenada
 {
     int start = 0;
     int end = s.find(del);
@@ -131,12 +131,17 @@ void Object::setTexture(float r, float g, float b)
 }
 bool Object::Collisions(std::vector<Object> objs)
 {
+    bool collide = false;
     for (Object o : objs)
     {
-        if(atual[1]-o.atual[1]<(o.height/2)+(height/2))
-            return true;
+        //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
+        if (atual[0] >o.min.x && atual[0] <o.max.x && atual[2] >o.min.z && atual[2] <o.max.z )
+        {
+            if (atual[1] - o.atual[1] < (o.height / 2) + (height / 2))
+                return true;
+        }
     }
-    return false;
+    return collide;
 }
 
 bool Object::equals(Object b)

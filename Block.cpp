@@ -41,33 +41,36 @@ void Block::Moves(int key)
     if (key == GLFW_KEY_UP)
     {
         f = glm::translate(glm::mat4(1), glm::vec3(0, 0, -width));
+        atual=glm::vec3(atual[0],atual[1],atual[2]-width);
     }
     if (key == GLFW_KEY_DOWN)
     {
         f = glm::translate(glm::mat4(1), glm::vec3(0, 0, width));
+        atual=glm::vec3(atual[0],atual[1],atual[2]+width);
     }
     if (key == GLFW_KEY_LEFT)
     {
         f = glm::translate(glm::mat4(1), glm::vec3(-width, 0, 0));
+        atual=glm::vec3(atual[0]-width,atual[1],atual[2]);
     }
     if (key == GLFW_KEY_RIGHT)
     {
         f = glm::translate(glm::mat4(1), glm::vec3(width, 0, 0));
+        atual=glm::vec3(atual[0]+width,atual[1],atual[2]);
     }
     glm::mat4 u = MVP * f;
     MVP = u;
-    //cout << MVP << std::endl;
+    cout << inicial_pos << std::endl;
 }
 Block::Block(struct Vertex c, struct Vertex min,struct Vertex max)
 {
-    max=max;
-    min=min;
+    this->max=max;
+    this->min=min;
     height=max.y-min.y;
     width=max.z-min.z;
     length=max.x-min.x;
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-    glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    MVP=Projection*View;
+    Object b=Object();
+    MVP=b.MVP;
     inicial_pos=glm::vec3(c.x,0,c.z);
     atual=inicial_pos;
     MVP=MVP*glm::translate(glm::mat4(1),inicial_pos);

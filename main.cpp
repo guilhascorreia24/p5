@@ -191,6 +191,9 @@ int main()
     }
     if (!colide)
       block.Falling(glfwGetTime());
+    else{
+      glfwSetTime(0);
+    }
     colide = block.Collisions(level1.objs);
     //cout << level.MVP << std::endl;
     //cout << block.MVP << std::endl;
@@ -232,14 +235,19 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   {
     objs.clear();
     block.block_reset();
+    reposition(block.inicial_pos, &block, level);
+    block.block_reset();
     objs.push_back(level);
     objs.push_back(block);
+    glfwSetTime(0);
   }
 }
 void reposition(glm::vec3 v, Block *b, Plataform p)
 {
   double dist = INT_MAX;
   Block t = Block();
+    b->inicial_pos[1] = 0;
+      cout << b->inicial_pos << std::endl;
   for (Block o : p.blocks)
   {
     if (o.distanceObjects(b) < dist)
@@ -248,9 +256,9 @@ void reposition(glm::vec3 v, Block *b, Plataform p)
       t = o;
     }
   }
-  cout << t.inicial_pos << std::endl;
+  //cout << t.inicial_pos << std::endl;
   b->inicial_pos = t.inicial_pos;
   b->inicial_pos[1] = 5;
-  b->atual=b->inicial_pos;
-  cout << b->inicial_pos << std::endl;
+  b->atual = b->inicial_pos;
+  //cout << b->inicial_pos << std::endl;
 }

@@ -21,7 +21,7 @@ struct Vertex
         //cout<<b.x<< " "<<this->x<< std::endl;
         return this->x == b.x && this->y == b.y && this->z == b.z;
     }
-    inline operator<(const Vertex &a) const
+    inline bool operator<(const Vertex &a) const
     {
         if (x < a.x)
         {
