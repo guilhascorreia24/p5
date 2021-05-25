@@ -129,7 +129,7 @@ void Object::setTexture(float r, float g, float b)
         this->colors[c++] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     }
 }
-bool Object::Collisions(std::vector<Object> objs)
+/*bool Object::Collisions(std::vector<Object> objs)
 {
     bool collide = false;
     for (Object o : objs)
@@ -137,12 +137,12 @@ bool Object::Collisions(std::vector<Object> objs)
         //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
         if (atual[0] >o.min.x && atual[0] <o.max.x && atual[2] >o.min.z && atual[2] <o.max.z )
         {
-            if (atual[1] - o.atual[1] < (o.height / 2) + (height / 2))
+            if (atual[1] - o.atual[1] < (o.height / 2) + (height / 2) && atual[1] - o.atual[1] > (o.height / 2) + (height / 2)-0.5 )
                 return true;
         }
     }
     return collide;
-}
+}*/
 
 bool Object::equals(Object b)
 {

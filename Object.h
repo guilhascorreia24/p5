@@ -68,10 +68,10 @@ public:
     Object();
     void setVertexes(const char *c, struct Vertex *v, struct Faces *f);
     void setTexture(float r, float g, float b);
-    bool Collisions(std::vector<Object> objs);
     bool equals(Object b);
     double distanceObjects(Object* b);
     struct Vertex getcenter();
+    //bool Collisions(std::vector<Object> o);
 
 private:
     void getfaces(string s, string del);

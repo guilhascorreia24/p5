@@ -16,65 +16,95 @@ Block::Block(const char *c)
     length = max.x - min.x;
     height = max.y - min.y;
     width = max.z - min.z;
+    orientation = glm::vec3(0, 1, 0);
 }
 void Block::block_reset()
 {
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-    glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    MVP = Projection * View;
     MVP = MVP * glm::translate(glm::mat4(1), inicial_pos);
 }
 
 void Block::Falling(float t_now)
 {
     float dt = t_now - this->time;
-    float acc = -0.01;
+    float acc = -0.001;
     this->vel += acc * dt;
-    glm::mat4 f = glm::translate(glm::mat4(1), glm::vec3(0, this->vel * dt, 0));
-    MVP = MVP * f;
-    atual=glm::vec3(atual[0],atual[1]+this->vel * dt,atual[2]);
+    if (orientation[1] == 1)
+    {
+        glm::mat4 f = glm::translate(glm::mat4(1), glm::vec3(0, this->vel * dt, 0));
+        MVP = MVP * f;
+        atual = glm::vec3(atual[0], atual[1] + this->vel * dt, atual[2]);
+    }
+    else
+    {
+        glm::mat4 f = glm::translate(glm::mat4(1), glm::vec3((this->vel * dt), 0, 0));
+        MVP = MVP * f;
+        atual = glm::vec3(atual[0] + this->vel * dt, atual[1], atual[2]);
+    }
 }
 
 void Block::Moves(int key)
 {
-    glm::mat4 f;
+    printf("antes\n");
+    cout<<MVP<<std::endl;
+    glm::mat4 f = glm::mat4(1), r = glm::mat4(1);
+    float radius = 90;
+    float walk = width + width / 2;
     if (key == GLFW_KEY_UP)
     {
-        f = glm::translate(glm::mat4(1), glm::vec3(0, 0, -width));
-        atual=glm::vec3(atual[0],atual[1],atual[2]-width);
+        f = glm::translate(f, glm::vec3(0, 0, -walk));
+        atual = glm::vec3(atual[0], atual[1], atual[2] - walk);
+        r = glm::rotate(r, glm::radians(-radius), glm::vec3(1,0,0));
     }
     if (key == GLFW_KEY_DOWN)
     {
-        f = glm::translate(glm::mat4(1), glm::vec3(0, 0, width));
-        atual=glm::vec3(atual[0],atual[1],atual[2]+width);
+        f = glm::translate(f, glm::vec3(0, 0, walk));
+        atual = glm::vec3(atual[0], atual[1], atual[2] + walk);
+        r = glm::rotate(r, glm::radians(radius), glm::vec3(1,0,0));
     }
     if (key == GLFW_KEY_LEFT)
     {
-        f = glm::translate(glm::mat4(1), glm::vec3(-width, 0, 0));
-        atual=glm::vec3(atual[0]-width,atual[1],atual[2]);
+        f = glm::translate(f, glm::vec3(-walk, 0, 0));
+        atual = glm::vec3(atual[0] - walk, atual[1], atual[2]);
+       r = glm::rotate(r, glm::radians(-radius),  glm::vec3(0, 0, 1));
     }
     if (key == GLFW_KEY_RIGHT)
     {
-        f = glm::translate(glm::mat4(1), glm::vec3(width, 0, 0));
-        atual=glm::vec3(atual[0]+width,atual[1],atual[2]);
+        f = glm::translate(f, glm::vec3(walk, 0, 0));
+        atual = glm::vec3(atual[0] + walk, atual[1], atual[2]);
+        r = glm::rotate(r, glm::radians(radius), glm::vec3(0, 0, 1));
     }
-    glm::mat4 u = MVP * f;
-    MVP = u;
-    cout << inicial_pos << std::endl;
+    glm::mat4 u = MVP *f ;
+    MVP = u ;
+    printf("depoois\n");
+    cout << MVP << std::endl;
 }
-Block::Block(struct Vertex c, struct Vertex min,struct Vertex max)
+
+Block::Block(struct Vertex c, struct Vertex min, struct Vertex max)
 {
-    this->max=max;
-    this->min=min;
-    height=max.y-min.y;
-    width=max.z-min.z;
-    length=max.x-min.x;
-    Object b=Object();
-    MVP=b.MVP;
-    inicial_pos=glm::vec3(c.x,0,c.z);
-    atual=inicial_pos;
-    MVP=MVP*glm::translate(glm::mat4(1),inicial_pos);
+    this->max = max;
+    this->min = min;
+    height = max.y - min.y;
+    width = max.z - min.z;
+    length = max.x - min.x;
+    Object b = Object();
+    MVP = b.MVP;
+    inicial_pos = glm::vec3(c.x, 0, c.z);
+    atual = inicial_pos;
+    MVP = MVP * glm::translate(glm::mat4(1), inicial_pos);
+    orientation = glm::vec3(0, 1, 0);
 }
-
-
-
+bool Block::Collisions(std::vector<Object> objs)
+{
+    bool collide = false;
+    for (Object o : objs)
+    {
+        //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
+        //cout<<atual[0]<<";"<<atual[2]<<std::endl;
+        if (atual[0] >= o.min.x && atual[0] < o.max.x && atual[2] >= o.min.z && atual[2] < o.max.z)
+        {
+            if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2) && abs(atual[1] - o.atual[1]) > (o.height / 2) + (height / 2) - 0.5))
+                return true;
+        }
+    }
+    return collide;
+}

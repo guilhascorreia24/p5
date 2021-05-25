@@ -11,7 +11,7 @@
 #include "Plataform.h"
 #include "Scenery.h"
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, bool collide);
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
 void reposition(glm::vec3 v, Block *b, Plataform p);
 // settings
@@ -23,6 +23,7 @@ std::vector<Object> objs;
 glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
+bool colide = false;
 const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
                                  "layout (location = 1) in vec3 vertexColor;\n"
@@ -144,16 +145,13 @@ int main()
   block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   block.block_reset();
   reposition(block.inicial_pos, &block, level);
-  block.block_reset();
 
   //level1.addObj(block);
   level1.addPlataform(level);
-
-  bool colide = false;
   while (!glfwWindowShouldClose(window))
   {
     unsigned int MatrixID = glGetUniformLocation(shaderProgram, "MVP");
-    processInput(window);
+    processInput(window, colide);
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(shaderProgram);
@@ -191,7 +189,8 @@ int main()
     }
     if (!colide)
       block.Falling(glfwGetTime());
-    else{
+    else
+    {
       glfwSetTime(0);
     }
     colide = block.Collisions(level1.objs);
@@ -213,11 +212,23 @@ int main()
   return 0;
 }
 
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, bool collide)
 {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   glfwSetKeyCallback(window, moveBlock);
+  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+  {
+    View = glm::lookAt(glm::vec3(0, 15, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    block.MVP = Projection * View * glm::translate(glm::mat4(1), block.atual);
+    level.MVP = Projection * View * glm::translate(glm::mat4(1), level.atual);
+  }
+  if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+  {
+    View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    block.MVP = Projection * View * glm::translate(glm::mat4(1), block.atual);
+    level.MVP = Projection * View * glm::translate(glm::mat4(1), level.atual);
+  }
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -227,7 +238,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-  if ((key == GLFW_KEY_DOWN || key == GLFW_KEY_LEFT || key == GLFW_KEY_UP || key == GLFW_KEY_RIGHT) && action == GLFW_PRESS)
+  if ((key == GLFW_KEY_DOWN || key == GLFW_KEY_LEFT || key == GLFW_KEY_UP || key == GLFW_KEY_RIGHT) && action == GLFW_PRESS && colide)
   {
     block.Moves(key);
   }
@@ -235,8 +246,8 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   {
     objs.clear();
     block.block_reset();
+    block.MVP = Projection * View;
     reposition(block.inicial_pos, &block, level);
-    block.block_reset();
     objs.push_back(level);
     objs.push_back(block);
     glfwSetTime(0);
@@ -246,8 +257,8 @@ void reposition(glm::vec3 v, Block *b, Plataform p)
 {
   double dist = INT_MAX;
   Block t = Block();
-    b->inicial_pos[1] = 0;
-      cout << b->inicial_pos << std::endl;
+  b->inicial_pos[1] = 0;
+  cout << b->inicial_pos << std::endl;
   for (Block o : p.blocks)
   {
     if (o.distanceObjects(b) < dist)
@@ -256,9 +267,12 @@ void reposition(glm::vec3 v, Block *b, Plataform p)
       t = o;
     }
   }
+  b->MVP = Projection * View;
   //cout << t.inicial_pos << std::endl;
-  b->inicial_pos = t.inicial_pos;
+  //b->inicial_pos = t.inicial_pos;
   b->inicial_pos[1] = 5;
   b->atual = b->inicial_pos;
+  b->block_reset();
+
   //cout << b->inicial_pos << std::endl;
 }
