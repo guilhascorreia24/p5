@@ -23,7 +23,12 @@ void Scenery::addObj(Object b){
     objs.push_back(b);
 }
 void Scenery::addPlataform(Plataform b){
+    plat=b;
     for(Block o:b.blocks){
         objs.push_back(o);
     }
+}
+void Scenery::addBlock(Block b){
+    block=b;
+    //objs.push_back(b);
 }

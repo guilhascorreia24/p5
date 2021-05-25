@@ -18,10 +18,6 @@ Block::Block(const char *c)
     width = max.z - min.z;
     orientation = glm::vec3(0, 1, 0);
 }
-void Block::block_reset()
-{
-    MVP = MVP * glm::translate(glm::mat4(1), inicial_pos);
-}
 
 void Block::Falling(float t_now)
 {
@@ -45,7 +41,7 @@ void Block::Falling(float t_now)
 void Block::Moves(int key)
 {
     printf("antes\n");
-    cout<<MVP<<std::endl;
+    cout << MVP << std::endl;
     glm::mat4 f = glm::mat4(1), r = glm::mat4(1);
     float radius = 90;
     float walk = width + width / 2;
@@ -53,19 +49,19 @@ void Block::Moves(int key)
     {
         f = glm::translate(f, glm::vec3(0, 0, -walk));
         atual = glm::vec3(atual[0], atual[1], atual[2] - walk);
-        r = glm::rotate(r, glm::radians(-radius), glm::vec3(1,0,0));
+        r = glm::rotate(r, glm::radians(-radius), glm::vec3(1, 0, 0));
     }
     if (key == GLFW_KEY_DOWN)
     {
         f = glm::translate(f, glm::vec3(0, 0, walk));
         atual = glm::vec3(atual[0], atual[1], atual[2] + walk);
-        r = glm::rotate(r, glm::radians(radius), glm::vec3(1,0,0));
+        r = glm::rotate(r, glm::radians(radius), glm::vec3(1, 0, 0));
     }
     if (key == GLFW_KEY_LEFT)
     {
         f = glm::translate(f, glm::vec3(-walk, 0, 0));
         atual = glm::vec3(atual[0] - walk, atual[1], atual[2]);
-       r = glm::rotate(r, glm::radians(-radius),  glm::vec3(0, 0, 1));
+        r = glm::rotate(r, glm::radians(-radius), glm::vec3(0, 0, 1));
     }
     if (key == GLFW_KEY_RIGHT)
     {
@@ -73,8 +69,8 @@ void Block::Moves(int key)
         atual = glm::vec3(atual[0] + walk, atual[1], atual[2]);
         r = glm::rotate(r, glm::radians(radius), glm::vec3(0, 0, 1));
     }
-    glm::mat4 u = MVP *f ;
-    MVP = u ;
+    glm::mat4 u = MVP * f * r;
+    MVP = u;
     printf("depoois\n");
     cout << MVP << std::endl;
 }
@@ -103,6 +99,16 @@ bool Block::Collisions(std::vector<Object> objs)
         if (atual[0] >= o.min.x && atual[0] < o.max.x && atual[2] >= o.min.z && atual[2] < o.max.z)
         {
             if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2) && abs(atual[1] - o.atual[1]) > (o.height / 2) + (height / 2) - 0.5))
+                return true;
+        }
+        if (atual[1] >= o.min.y && atual[1] < o.max.y && atual[2] >= o.min.z && atual[2] < o.max.z)
+        {
+            if ((abs(atual[0] - o.atual[0]) < (o.length / 2) + (length / 2) && abs(atual[0] - o.atual[0]) > (o.length / 2) + (length / 2) - 0.5))
+                return true;
+        }
+        if (atual[1] >= o.min.y && atual[1] < o.max.y && atual[0] >= o.min.x && atual[0] < o.max.x)
+        {
+            if ((abs(atual[2] - o.atual[2]) < (o.width / 2) + (width / 2) && abs(atual[2] - o.atual[2]) > (o.width / 2) + (width / 2) - 0.5))
                 return true;
         }
     }

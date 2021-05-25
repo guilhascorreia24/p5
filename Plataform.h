@@ -21,6 +21,7 @@ class Plataform: public Object
 public:
     std::vector<Block> blocks; 
     Plataform(const char *f);
+    Plataform(){};
 
     private:
         double distanceOther(glm::mat4 t);

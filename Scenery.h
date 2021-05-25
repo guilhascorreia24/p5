@@ -15,15 +15,25 @@ using namespace std;
 #include <set>
 #include "Object.h"
 #include "Plataform.h"
+#include "Block.h"
 class Scenery
 {
     public:
         std::vector<Object> objs;
         glm::mat4 MVP;
-        Scenery(glm::mat4 MVP){
+        Plataform plat;
+        Block block;
+        Scenery(glm::mat4 MVP,Block b,Plataform p){
             this->MVP=MVP;
+            block=b;
+            plat=p;
+            block.MVP=MVP*glm::translate(glm::mat4(1), block.atual);
+            plat.MVP=MVP*glm::translate(glm::mat4(1), plat.atual);
+            addPlataform(plat);
         };
+        Scenery(){}
         void addObj(Object b);
         void addPlataform(Plataform b);
+        void addBlock(Block b);
 };
 #endif
