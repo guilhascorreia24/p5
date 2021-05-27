@@ -107,6 +107,7 @@ void Block::Moves(int key)
             float exchange = length;
             length = height;
             height = exchange;
+            ver=height/2;
             f = glm::translate(f, glm::vec3(0, ver, walk / 2));
             //r = glm::rotate(r, glm::radians(radius), rotate_vertical);
             atual = glm::vec3(atual[0], atual[1] + ver, atual[2] + walk / 2);
