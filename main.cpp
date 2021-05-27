@@ -10,6 +10,7 @@
 #include "Block.h"
 #include "Plataform.h"
 #include "Scenery.h"
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window, bool collide);
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -19,8 +20,6 @@ const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
 Block block;
 Plataform plat;
-glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 Scenery level1;
 bool colide = false;
 const char *vertexShaderSource = "#version 330 core\n"
@@ -145,6 +144,7 @@ int main()
   reposition(block.inicial_pos, &level1);
 
   //level1.addObj(block);
+  //timerun=glfwGetTime();
   while (!glfwWindowShouldClose(window))
   {
     unsigned int MatrixID = glGetUniformLocation(shaderProgram, "MVP");
@@ -184,13 +184,19 @@ int main()
     {
       glDeleteBuffers(1, &EBO[i]);
     }
-    if (!colide)
+    if (!colide){
+      //printf("oi\n");
       level1.block.Falling(glfwGetTime());
+    }
     else
     {
-      glfwSetTime(0);
+      glfwSetTime(0.0);
     }
     colide = level1.block.Collisions(level1.objs);
+    if(!colide){
+      //printf("oi\n");
+      colide=level1.BlockOverEdgesPrataform();
+    }
     //cout << level.MVP << std::endl;
     //cout << block.MVP << std::endl;
     glfwSwapBuffers(window);
@@ -216,13 +222,13 @@ void processInput(GLFWwindow *window, bool collide)
   glfwSetKeyCallback(window, moveBlock);
   if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
   {
-    View = glm::lookAt(glm::vec3(0, 15, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Projection * View, block, plat);
+    View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    level1 = Scenery(Projection * View, level1.block, level1.plat);
   }
   if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
   {
     View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Projection * View, block, plat);
+    level1 = Scenery(Projection * View,level1.block, level1.plat);
   }
 }
 
@@ -240,15 +246,18 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   if (key == GLFW_KEY_R && action == GLFW_PRESS)
   {
     level1.block.MVP = Projection * View;
-    reposition(block.inicial_pos, &level1);
-    glfwSetTime(0);
+    reposition(level1.block.inicial_pos, &level1);
+    glfwSetTime(0.0);
+    
   }
 }
 void reposition(glm::vec3 v, Scenery* l)
 {
   double dist = INT_MAX;
   Block t = Block();
-  l->block.MVP = l->block.MVP * glm::translate(glm::mat4(1), l->block.inicial_pos);
+  l->block.inicial_pos[1] = 0;
+  l->block.atual=l->block.inicial_pos;
+  l->block.MVP = l->MVP * glm::translate(glm::mat4(1), l->block.inicial_pos);
   for (Block o : l->plat.blocks)
   {
     if (o.distanceObjects(&l->block) < dist)
@@ -257,8 +266,8 @@ void reposition(glm::vec3 v, Scenery* l)
       t = o;
     }
   }
+  l->block.inicial_pos=t.inicial_pos;
   l->block.MVP = Projection * View;
-  l->block.inicial_pos[1] = 5;
-  l->block.atual = l->block.inicial_pos;
-  l->block.MVP = l->block.MVP * glm::translate(glm::mat4(1), l->block.inicial_pos);
+  l->block.reset();
+
 }

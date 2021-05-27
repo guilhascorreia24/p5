@@ -6,7 +6,6 @@
 using namespace std;
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -16,24 +15,22 @@ using namespace std;
 #include "Object.h"
 #include "Plataform.h"
 #include "Block.h"
+//glm::mat4 Projection,View;
+inline glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+inline glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 class Scenery
 {
-    public:
-        std::vector<Object> objs;
-        glm::mat4 MVP;
-        Plataform plat;
-        Block block;
-        Scenery(glm::mat4 MVP,Block b,Plataform p){
-            this->MVP=MVP;
-            block=b;
-            plat=p;
-            block.MVP=MVP*glm::translate(glm::mat4(1), block.atual);
-            plat.MVP=MVP*glm::translate(glm::mat4(1), plat.atual);
-            addPlataform(plat);
-        };
-        Scenery(){}
-        void addObj(Object b);
-        void addPlataform(Plataform b);
-        void addBlock(Block b);
+
+public:
+    std::vector<Object> objs;
+    glm::mat4 MVP;
+    Plataform plat;
+    Block block;
+    Scenery(glm::mat4 MVP, Block b, Plataform p);
+    Scenery() {}
+    void addObj(Object b);
+    void addPlataform(Plataform b);
+    void addBlock(Block b);
+    bool BlockOverEdgesPrataform();
 };
 #endif

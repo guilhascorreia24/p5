@@ -18,18 +18,26 @@ class Block : public Object
     float time = 0, vel = 0;
 
 public:
-    glm::vec3 orientation;
-    glm::vec3 roations;
+    glm::vec3 rotations;
     Block(const char *f);
     Block(){};
     Block(struct Vertex c,struct Vertex min,struct Vertex max);
     void block_reset();
     void Falling(float t);
     void Moves(int key);
-    bool Collisions(std::vector<Object> o);
+    void reset();
     bool operator==(Block const &b)
     {
-        return MVP[3][0] == b.MVP[3][0] && MVP[3][1] == b.MVP[3][1] && MVP[3][2] == b.MVP[3][2];
+        return atual[0]==b.atual[0] && atual[1]==b.atual[1] && atual[2]==b.atual[2];
     }
+    void standUP();
+
+    private:
+        glm::vec3 rotate_vertical,rotate_lateral;
+        glm::mat4 Rotations(int key);
+        //glm::mat4 BlockRoll();
+        void setRotations(float r,glm::vec3 ori);
+        glm::mat4 Translations(int key,float move,glm::vec3 r);
+
 };
 #endif

@@ -71,7 +71,8 @@ public:
     bool equals(Object b);
     double distanceObjects(Object* b);
     struct Vertex getcenter();
-    //bool Collisions(std::vector<Object> o);
+    bool Collisions(std::vector<Object> o);
+    string tostring();
 
 private:
     void getfaces(string s, string del);

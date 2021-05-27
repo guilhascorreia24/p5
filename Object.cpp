@@ -5,6 +5,7 @@
 #include <fstream>
 #include "Object.h"
 #include "Plataform.h"
+#include "Scenery.h"
 #include <stdlib.h>
 #include <vector>
 #include <set>
@@ -113,8 +114,8 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
 }
 Object::Object()
 {
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-    glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    //glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+    //glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     MVP = Projection * View;
 }
 
@@ -160,7 +161,7 @@ bool Object::equals(Object b)
 }
 double Object::distanceObjects(Object *b)
 {
-    return sqrt(pow(MVP[3][0] - b->MVP[3][0], 2) + pow(MVP[3][1] - b->MVP[3][1], 2) + pow(MVP[3][2] - b->MVP[3][2], 2));
+    return sqrt(pow(atual[0] - b->atual[0], 2) + pow(atual[1] - b->atual[1], 2) + pow(atual[2] - b->atual[2], 2));
 }
 
 struct Vertex Object::getcenter()
@@ -170,4 +171,40 @@ struct Vertex Object::getcenter()
     v.y = MVP[3][1];
     v.z = MVP[3][2];
     return v;
+}
+
+string Object::tostring(){
+    return to_string(atual[0])+" "+ to_string(atual[1])+" " +to_string(atual[2])+"\n";
+}
+
+bool Object::Collisions(std::vector<Object> objs)
+{
+    bool collide = false;
+    for (Object o : objs)
+    {
+        //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
+        //cout<<atual[0]<<";"<<atual[2]<<std::endl;
+        if (atual[0] > o.min.x && atual[0] < o.max.x && atual[2] > o.min.z && atual[2] < o.max.z)
+        {
+            if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
+            {
+                //printf("colide up\n");
+                return true;
+            }
+            if (atual[1] > o.min.y && atual[1] < o.max.y)
+            {
+                if ((abs(atual[0] - o.atual[0]) < (o.length / 2) + (length / 2)))
+                {
+                    //printf("colide fesquerda/direta\n");
+                    return true;
+                }
+                if ((abs(atual[2] - o.atual[2]) < (o.width / 2) + (width / 2)))
+                {
+                    //printf("colide frente/atras\n");
+                    return true;
+                }
+            }
+        }
+    }
+    return collide;
 }
