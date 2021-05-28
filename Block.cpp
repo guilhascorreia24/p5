@@ -26,6 +26,7 @@ void Block::reset()
     inicial_pos[1] = 5;
     atual = inicial_pos;
     MVP = MVP * glm::translate(glm::mat4(1), atual);
+    rotations = glm::vec3(0, 0, 0);
     rotate_vertical = glm::vec3(1, 0, 0);
     rotate_lateral = glm::vec3(0, 0, 1);
 }
@@ -35,8 +36,19 @@ void Block::Falling(float t_now)
     float acc = -0.001;
     this->vel += acc * dt;
     standUP();
-    glm::mat4 f = glm::translate(glm::mat4(1), glm::vec3(0, this->vel * dt, 0));
+    glm::mat4 f;
+    //cout<<rotate_lateral<< rotate_vertical<<std::endl;
+    //cout<<rotations<<std::endl;
+    f = glm::translate(glm::mat4(1), glm::vec3(0, this->vel * dt, 0));
     MVP = MVP * f;
+     if(rotate_vertical == glm::vec3(0, 1, 0))
+    {
+        MVP = MVP * glm::rotate(glm::mat4(1), glm::radians(rotations[2]), glm::vec3(0, 0, 1));
+    }
+    else if(rotate_lateral == glm::vec3(0, 1, 0))
+    {
+        MVP = MVP * glm::rotate(glm::mat4(1), glm::radians(rotations[0]), glm::vec3(1, 0, 0));
+    }
     atual = glm::vec3(atual[0], atual[1] + this->vel * dt, atual[2]);
 }
 void Block::Moves(int key)
@@ -47,6 +59,7 @@ void Block::Moves(int key)
     standUP();
     printf("\n");
     glm::mat4 f = glm::mat4(1), r = glm::mat4(1);
+    cout<<rotate_lateral<<" "<<rotate_vertical<<std::endl;
     if (key == GLFW_KEY_UP)
     {
         f = glm::translate(f, glm::vec3(0, 0, -walk));
@@ -59,6 +72,7 @@ void Block::Moves(int key)
             ver = height / 2;
             f = glm::translate(f, glm::vec3(0, -ver, -walk / 2));
             r = glm::rotate(r, glm::radians(-radius), rotate_vertical);
+            //rotations += rotate_vertical * (-radius);
 
             rotate_lateral = glm::vec3(0, 1, 0);
             rotate_vertical = glm::vec3(1, 0, 0);
@@ -69,11 +83,11 @@ void Block::Moves(int key)
             float exchange = length;
             length = height;
             height = exchange;
-            ver=height/2;
+            ver = height / 2;
             f = glm::translate(f, glm::vec3(0, ver, -walk / 2));
             atual = glm::vec3(atual[0], atual[1] + ver, atual[2] - walk / 2);
             //r = glm::rotate(r, glm::radians(-radius), rotate_vertical);
-
+            //rotations += rotate_vertical * (-radius);
             rotate_vertical = glm::vec3(1, 0, 0);
             rotate_lateral = glm::vec3(0, 0, 1);
         }
@@ -82,8 +96,9 @@ void Block::Moves(int key)
 
             r = glm::rotate(r, glm::radians(-radius), rotate_lateral);
             r = glm::rotate(r, glm::radians(-radius), rotate_vertical);
+            //rotations += rotate_vertical * (-radius);
         }
-        rotations = rotate_vertical * (-radius);
+        rotations += rotate_vertical * (-radius);
     }
     if (key == GLFW_KEY_DOWN)
     {
@@ -97,7 +112,7 @@ void Block::Moves(int key)
             ver = height / 2;
             f = glm::translate(f, glm::vec3(0, -ver, walk / 2));
             r = glm::rotate(r, glm::radians(radius), rotate_vertical);
-
+            //rotations += rotate_vertical * (radius);
             rotate_lateral = glm::vec3(0, 1, 0);
             rotate_vertical = glm::vec3(1, 0, 0);
             atual = glm::vec3(atual[0], atual[1] - ver, atual[2] + walk / 2);
@@ -107,7 +122,7 @@ void Block::Moves(int key)
             float exchange = length;
             length = height;
             height = exchange;
-            ver=height/2;
+            ver = height / 2;
             f = glm::translate(f, glm::vec3(0, ver, walk / 2));
             //r = glm::rotate(r, glm::radians(radius), rotate_vertical);
             atual = glm::vec3(atual[0], atual[1] + ver, atual[2] + walk / 2);
@@ -119,7 +134,7 @@ void Block::Moves(int key)
             r = glm::rotate(r, glm::radians(radius), rotate_lateral);
             r = glm::rotate(r, glm::radians(radius), rotate_vertical);
         }
-        rotations = rotate_vertical * (radius);
+        rotations += rotate_vertical * (radius);
     }
     if (key == GLFW_KEY_LEFT)
     {
@@ -130,7 +145,7 @@ void Block::Moves(int key)
             float exchange = length;
             length = height;
             height = exchange;
-            ver=height/2;
+            ver = height / 2;
             f = glm::translate(f, glm::vec3(-walk / 2, -ver, 0));
             r = glm::rotate(r, glm::radians(-radius), rotate_lateral);
             atual = glm::vec3(atual[0] - walk / 2, atual[1] - ver, atual[2]);
@@ -142,7 +157,7 @@ void Block::Moves(int key)
             float exchange = length;
             length = height;
             height = exchange;
-            ver=height/2;
+            ver = height / 2;
             f = glm::translate(f, glm::vec3(-walk / 2, ver, 0));
             //r = glm::rotate(r, glm::radians(-radius), rotate_lateral);
             atual = glm::vec3(atual[0] - walk / 2, atual[1] + ver, atual[2]);
@@ -154,7 +169,7 @@ void Block::Moves(int key)
             r = glm::rotate(r, glm::radians(radius), rotate_vertical);
             r = glm::rotate(r, glm::radians(-radius), rotate_lateral);
         }
-        rotations = rotate_lateral * (-radius);
+        rotations += rotate_lateral * (-radius);
     }
     if (key == GLFW_KEY_RIGHT)
     {
@@ -165,7 +180,7 @@ void Block::Moves(int key)
             float exchange = length;
             length = height;
             height = exchange;
-            ver=height/2;
+            ver = height / 2;
             f = glm::translate(f, glm::vec3(+walk / 2, -ver, 0));
             r = glm::rotate(r, glm::radians(radius), rotate_lateral);
             atual = glm::vec3(atual[0] + walk / 2, atual[1] - ver, atual[2]);
@@ -177,7 +192,7 @@ void Block::Moves(int key)
             float exchange = length;
             length = height;
             height = exchange;
-            ver=height/2;
+            ver = height / 2;
             f = glm::translate(f, glm::vec3(+walk / 2, ver, 0));
             //r = glm::rotate(r, glm::radians(-radius), rotate_lateral);
             atual = glm::vec3(atual[0] + walk / 2, atual[1] + ver, atual[2]);
@@ -190,11 +205,11 @@ void Block::Moves(int key)
             r = glm::rotate(r, glm::radians(radius), rotate_vertical);
             r = glm::rotate(r, glm::radians(radius), rotate_lateral);
         }
-        rotations = rotate_lateral * (radius);
+        rotations += rotate_lateral * (radius);
     }
     //cout << rotations << std::endl;
-    cout << rotate_vertical << std::endl;
-    cout << rotate_lateral << std::endl;
+    //cout << rotate_vertical << std::endl;
+    //cout << rotate_lateral << std::endl;
     glm::mat4 u = MVP * f * r;
     MVP = u;
 }
@@ -213,11 +228,4 @@ Block::Block(struct Vertex c, struct Vertex min, struct Vertex max)
     MVP = MVP * glm::translate(glm::mat4(1), inicial_pos);
     rotate_vertical = glm::vec3(0, 1, 0);
     rotate_lateral = glm::vec3(0, 0, 1);
-}
-void Block::standUP()
-{
-    MVP = Projection * View * glm::translate(glm::mat4(1), atual);
-    height = max.y - min.y;
-    width = max.z - min.z;
-    length = max.x - min.x;
 }

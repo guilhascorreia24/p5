@@ -61,7 +61,7 @@ public:
     float *colors;
     std::vector<struct Faces> faces;
     glm::mat4 MVP;
-    glm::vec3 inicial_pos,atual;
+    glm::vec3 inicial_pos, atual;
     struct Vertex max, min;
     float height, length, width;
 
@@ -69,10 +69,11 @@ public:
     void setVertexes(const char *c, struct Vertex *v, struct Faces *f);
     void setTexture(float r, float g, float b);
     bool equals(Object b);
-    double distanceObjects(Object* b);
+    double distanceObjects(Object *b);
     struct Vertex getcenter();
     bool Collisions(std::vector<Object> o);
     string tostring();
+    void standUP();
 
 private:
     void getfaces(string s, string del);

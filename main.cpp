@@ -184,19 +184,19 @@ int main()
     {
       glDeleteBuffers(1, &EBO[i]);
     }
+    //cout<<level1.block.atual<<std::endl;
     if (!colide){
       //printf("oi\n");
       level1.block.Falling(glfwGetTime());
-    }
-    else
-    {
-      glfwSetTime(0.0);
+    }else{
+      glfwSetTime(0);
     }
     colide = level1.block.Collisions(level1.objs);
     if(!colide){
       //printf("oi\n");
       colide=level1.BlockOverEdgesPrataform();
     }
+    
     //cout << level.MVP << std::endl;
     //cout << block.MVP << std::endl;
     glfwSwapBuffers(window);

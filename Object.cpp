@@ -167,9 +167,9 @@ double Object::distanceObjects(Object *b)
 struct Vertex Object::getcenter()
 {
     struct Vertex v;
-    v.x = MVP[3][0];
-    v.y = MVP[3][1];
-    v.z = MVP[3][2];
+    v.x = atual[0];
+    v.y = atual[1];
+    v.z = atual[2];
     return v;
 }
 
@@ -189,6 +189,8 @@ bool Object::Collisions(std::vector<Object> objs)
             if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
             {
                 //printf("colide up\n");
+                //atual[1]=(o.height / 2) + (height / 2)+o.atual[1]-0.1;
+                //standUP();
                 return true;
             }
             if (atual[1] > o.min.y && atual[1] < o.max.y)
@@ -207,4 +209,11 @@ bool Object::Collisions(std::vector<Object> objs)
         }
     }
     return collide;
+}
+void Object::standUP()
+{
+    MVP = Projection * View * glm::translate(glm::mat4(1), atual);
+    height = max.y - min.y;
+    width = max.z - min.z;
+    length = max.x - min.x;
 }

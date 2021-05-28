@@ -30,7 +30,6 @@ public:
     {
         return atual[0]==b.atual[0] && atual[1]==b.atual[1] && atual[2]==b.atual[2];
     }
-    void standUP();
 
     private:
         glm::vec3 rotate_vertical,rotate_lateral;
