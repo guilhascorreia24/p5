@@ -173,8 +173,9 @@ struct Vertex Object::getcenter()
     return v;
 }
 
-string Object::tostring(){
-    return to_string(atual[0])+" "+ to_string(atual[1])+" " +to_string(atual[2])+"\n";
+string Object::tostring()
+{
+    return to_string(atual[0]) + " " + to_string(atual[1]) + " " + to_string(atual[2]) + "\n";
 }
 
 bool Object::Collisions(std::vector<Object> objs)
@@ -182,15 +183,13 @@ bool Object::Collisions(std::vector<Object> objs)
     bool collide = false;
     for (Object o : objs)
     {
-        //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
-        //cout<<atual[0]<<";"<<atual[2]<<std::endl;
         if (atual[0] > o.min.x && atual[0] < o.max.x && atual[2] > o.min.z && atual[2] < o.max.z)
         {
             if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
             {
+                cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
+                cout<<tostring()<<std::endl;
                 //printf("colide up\n");
-                //atual[1]=(o.height / 2) + (height / 2)+o.atual[1]-0.1;
-                //standUP();
                 return true;
             }
             if (atual[1] > o.min.y && atual[1] < o.max.y)

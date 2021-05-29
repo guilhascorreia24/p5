@@ -69,3 +69,11 @@ double Plataform::distanceOther(glm::mat4 d)
 {
     return sqrt(pow(MVP[3][0] - d[3][0], 2) + pow(MVP[3][1] - d[3][1], 2) + pow(MVP[3][2] - d[3][2], 2));
 }
+bool Plataform::overBlock(Block b){
+    for(Block b2: blocks){
+        if(b.getcenter().x>=b2.min.x && b.getcenter().x<=b2.max.x && b.getcenter().z>=b2.min.z && b.getcenter().z<=b2.max.z && b.getcenter().y-b2.getcenter().y>=(b.height/2)+(b2.height/2)){
+            return true;
+        }
+    }
+    return false;
+}

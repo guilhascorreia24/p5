@@ -191,11 +191,7 @@ int main()
     }else{
       glfwSetTime(0);
     }
-    colide = level1.block.Collisions(level1.objs);
-    if(!colide){
-      //printf("oi\n");
-      colide=level1.BlockOverEdgesPrataform();
-    }
+    colide=level1.BlockOverEdgesPrataform();
     
     //cout << level.MVP << std::endl;
     //cout << block.MVP << std::endl;
@@ -247,7 +243,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   {
     level1.block.MVP = Projection * View;
     reposition(level1.block.inicial_pos, &level1);
-    glfwSetTime(0.0);
+    glfwSetTime(0);
     
   }
 }
@@ -267,6 +263,7 @@ void reposition(glm::vec3 v, Scenery* l)
     }
   }
   l->block.inicial_pos=t.inicial_pos;
+  //cout<<l->block.tostring()<<std::endl;
   l->block.MVP = Projection * View;
   l->block.reset();
 

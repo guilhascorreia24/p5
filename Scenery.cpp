@@ -18,6 +18,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
+#include <unistd.h>
 using namespace std;
 void Scenery::addObj(Object b)
 {
@@ -44,7 +45,7 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p)
     cout << block.atual << std::endl;
     block.MVP = MVP * glm::translate(glm::mat4(1), block.atual);
     block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
-    block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[1]), glm::vec3(0, 1, 0));
+    //block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[1]), glm::vec3(0, 1, 0));
     block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
     plat.MVP = MVP * glm::translate(glm::mat4(1), plat.atual);
     addPlataform(plat);
@@ -53,20 +54,84 @@ bool Scenery::BlockOverEdgesPrataform()
 {
     Block o;
     double dist = INT_MAX;
-    bool line=false;
-    for (Block p : plat.blocks)
+    bool line = false;
+    std::vector<Object> obj;
+    int r = 1000000;
+    cout<<block.tostring()<<::endl;
+    block.atual[0] = round(block.atual[0] * r) / r;
+    block.atual[2] = round(block.atual[2] * r) / r;
+    for (Object b : plat.blocks)
     {
-        if (p.distanceObjects(&block) < dist)
+        obj.push_back(b);
+    }
+    //cout << block.tostring() << std::endl;
+    if (block.Collisions(obj))
+    {
+        return true;
+    }
+    if (block.rotate_vertical == glm::vec3(0, 1, 0))
+    {
+        struct Vertex v;
+        v.x = block.getcenter().x + 1.5 / 2;
+        v.y = block.getcenter().y;
+        v.z = block.getcenter().z;
+        Block b = Block(v, v, v);
+        v.x = block.getcenter().x - 1.5 / 2;
+        Block b1 = Block(v, v, v);
+        cout << b.tostring() << std::endl;
+        cout << b1.tostring() << std::endl;
+        cout << plat.overBlock(b) << " " << plat.overBlock(b1) << std::endl;
+        if (plat.overBlock(b) && plat.overBlock(b1))
         {
-            dist = p.distanceObjects(&block);
-            //printf("found\n");
-            o = p;
+            return true;
+        }
+        else if (plat.overBlock(b))
+        {
+            block.standUP();
+            block.atual[0]-=1.5/2;
+            block.MVP = glm::translate(block.MVP, glm::vec3(-1.5 / 2, 0, 0));
+            return false;
+        }
+        else if (plat.overBlock(b1))
+        {
+            block.standUP();
+            block.atual[0]=1.5/2;
+            block.MVP = glm::translate(block.MVP, glm::vec3(1.5 / 2, 0, 0));
+            return false;
         }
     }
-    //cout<<o.min.tostring()<<" "<<o.max.tostring()<<std::endl;
-    //cout<<(bool)(block.atual[0]<=o.max.x && block.atual[0]>=o.min.x && block.atual[2]<=o.max.z && block.atual[2]>=o.min.z)<<std::endl;
-    if((abs(block.atual[1] - o.atual[1]) < (o.height / 2) + (block.height / 2)) && (block.atual[0]<=o.max.x && block.atual[0]>=o.min.x && block.atual[2]<=o.max.z && block.atual[2]>=o.min.z)){
-        line=true;
+    if (block.rotate_lateral == glm::vec3(0, 1, 0))
+    {
+        struct Vertex v;
+        v.z = block.getcenter().z + 1.5 / 2;
+        v.y = block.getcenter().y;
+        v.x = block.getcenter().x;
+        Block b = Block(v, v, v);
+        v.z = block.getcenter().z - 1.5 / 2;
+        Block b1 = Block(v, v, v);
+        if (plat.overBlock(b) && plat.overBlock(b1))
+        {
+            return true;
+        }
+        else if (plat.overBlock(b))
+        {
+            block.standUP();
+            block.atual[2]-=1.5/2;
+            block.MVP = glm::translate(block.MVP, glm::vec3(0, 0, -1.5 / 2));
+            return false;
+        }
+        else if (plat.overBlock(b1))
+        {
+            block.standUP();
+            block.atual[2]+=1.5/2;
+            block.MVP = glm::translate(block.MVP, glm::vec3(0, 0, 1.5 / 2));
+            return false;
+        }
     }
-    return line;
+    return false;
+}
+
+bool Scenery::CheckWin()
+{
+    return false;
 }

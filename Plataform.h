@@ -22,6 +22,7 @@ public:
     std::vector<Block> blocks; 
     Plataform(const char *f);
     Plataform(){};
+    bool overBlock(Block b);
 
     private:
         double distanceOther(glm::mat4 t);
