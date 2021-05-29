@@ -80,21 +80,34 @@ bool Scenery::BlockOverEdgesPrataform()
         v.x = block.getcenter().x - 1.5 / 2;
         Block b1 = Block(v, v, v);
         //cout << b.tostring() << std::endl;
-        //cout << b1.tostring() << std::endl;
-        cout << plat.overBlock(b) << " " << plat.overBlock(b1) << std::endl;
+        cout << (bool)(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]) << std::endl;
+        cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
         if (plat.overBlock(b) && plat.overBlock(b1))
         {
+            printf("sobre plat\n");
             return true;
         }
-        else if (plat.overBlock(b) && !b.operator==(plat.final_))
+        else if (plat.overBlock(b))
         {
+            printf("falta 1 vert - plat\n");
+            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
+            {
+                printf("sob o final\n");
+                return true;
+            }
             block.standUP();
             //block.atual[0]-=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(-1.5 / 2, 0, 0));
             return false;
         }
-        else if (plat.overBlock(b1) && !b1.operator==(plat.final_))
+        else if (plat.overBlock(b1))
         {
+            printf("falta 1 vert + plat\n");
+            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
+            {
+                printf("sob o final\n");
+                return true;
+            }
             block.standUP();
             //block.atual[0]+=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(1.5 / 2, 0, 0));
@@ -110,21 +123,35 @@ bool Scenery::BlockOverEdgesPrataform()
         Block b = Block(v, v, v);
         v.z = block.getcenter().z - 1.5 / 2;
         Block b1 = Block(v, v, v);
+        cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
         if (plat.overBlock(b) && plat.overBlock(b1))
         {
+            printf("sobre plat\n");
             return true;
         }
-        else if (plat.overBlock(b) && !b.operator==(plat.final_))
+        else if (plat.overBlock(b))
         {
+            printf("falta 1 lat - plat\n");
+            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
+            {
+                printf("sob o final\n");
+                return true;
+            }
             block.standUP();
-            block.atual[2]-=1.5/2;
+            block.atual[2] -= 1.5 / 2;
             block.MVP = glm::translate(block.MVP, glm::vec3(0, 0, -1.5 / 2));
             return false;
         }
-        else if (plat.overBlock(b1) && !b1.operator==(plat.final_))
+        else if (plat.overBlock(b1))
         {
-            block.standUP();
-            block.atual[2]+=1.5/2;
+            printf("falta 1 lat +plat\n");
+            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
+            {
+                printf("sob o final\n");
+                return true;
+            }
+                block.standUP();
+            block.atual[2] += 1.5 / 2;
             block.MVP = glm::translate(block.MVP, glm::vec3(0, 0, 1.5 / 2));
             return false;
         }

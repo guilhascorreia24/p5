@@ -122,12 +122,15 @@ void Plataform::findFinal()
                 find(blocks.begin(), blocks.end(), o) != blocks.end())
             {
                 final_ = b;
-                final_.max.x = final_.atual[0] + round((blocks.at(0).length / 2) * r) / r;
-                final_.max.z = final_.atual[2] + round((blocks.at(0).width / 2) * r) / r;
-                final_.max.y = final_.atual[1] + round((blocks.at(0).height / 2) * r) / r;
-                final_.min.x = final_.atual[0] - round((blocks.at(0).length / 2) * r) / r;
-                final_.min.z = final_.atual[2] - round((blocks.at(0).width / 2) * r) / r;
-                final_.min.y = final_.atual[1] - round((blocks.at(0).height / 2) * r) / r;
+                final_.atual[0]=round((final_.atual[0]) * r) / r;
+                final_.atual[1]=round((final_.atual[1]) * r) / r;
+                final_.atual[2]=round((final_.atual[2]) * r) / r;
+                final_.max.x = round((final_.atual[0] + blocks.at(0).length / 2) * r) / r;
+                final_.max.z = round((final_.atual[2] + blocks.at(0).width / 2) * r) / r;
+                final_.max.y = round((final_.atual[1] + blocks.at(0).height / 2) * r) / r;
+                final_.min.x = round((final_.atual[0] - blocks.at(0).length / 2) * r) / r;
+                final_.min.z = round((final_.atual[2] - blocks.at(0).width / 2) * r) / r;
+                final_.min.y = round((final_.atual[1] - blocks.at(0).height / 2) * r) / r;
             }
         }
     }
