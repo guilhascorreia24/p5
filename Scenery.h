@@ -25,6 +25,8 @@ public:
     std::vector<Object> objs;
     glm::mat4 MVP;
     Plataform plat;
+    Plataform floor;
+    Plataform sky;
     Block block;
     Scenery(glm::mat4 MVP, Block b, Plataform p);
     Scenery() {}

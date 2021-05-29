@@ -189,7 +189,7 @@ bool Object::Collisions(std::vector<Object> objs)
             {
                 cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
                 cout<<tostring()<<std::endl;
-                //printf("colide up\n");
+                printf("colide up\n");
                 return true;
             }
             if (atual[1] > o.min.y && atual[1] < o.max.y)

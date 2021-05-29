@@ -88,14 +88,14 @@ bool Scenery::BlockOverEdgesPrataform()
         else if (plat.overBlock(b))
         {
             block.standUP();
-            block.atual[0]-=1.5/2;
+            //block.atual[0]-=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(-1.5 / 2, 0, 0));
             return false;
         }
         else if (plat.overBlock(b1))
         {
             block.standUP();
-            block.atual[0]=1.5/2;
+            //block.atual[0]+=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(1.5 / 2, 0, 0));
             return false;
         }
