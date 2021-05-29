@@ -57,7 +57,8 @@ bool Scenery::BlockOverEdgesPrataform()
     bool line = false;
     std::vector<Object> obj;
     int r = 1000000;
-    cout<<block.tostring()<<::endl;
+    //cout<<block.tostring()<<::endl;
+    //cout<<plat.final_.tostring()<<std::endl;
     block.atual[0] = round(block.atual[0] * r) / r;
     block.atual[2] = round(block.atual[2] * r) / r;
     for (Object b : plat.blocks)
@@ -78,21 +79,21 @@ bool Scenery::BlockOverEdgesPrataform()
         Block b = Block(v, v, v);
         v.x = block.getcenter().x - 1.5 / 2;
         Block b1 = Block(v, v, v);
-        cout << b.tostring() << std::endl;
-        cout << b1.tostring() << std::endl;
+        //cout << b.tostring() << std::endl;
+        //cout << b1.tostring() << std::endl;
         cout << plat.overBlock(b) << " " << plat.overBlock(b1) << std::endl;
         if (plat.overBlock(b) && plat.overBlock(b1))
         {
             return true;
         }
-        else if (plat.overBlock(b))
+        else if (plat.overBlock(b) && !b.operator==(plat.final_))
         {
             block.standUP();
             //block.atual[0]-=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(-1.5 / 2, 0, 0));
             return false;
         }
-        else if (plat.overBlock(b1))
+        else if (plat.overBlock(b1) && !b1.operator==(plat.final_))
         {
             block.standUP();
             //block.atual[0]+=1.5/2;
@@ -113,14 +114,14 @@ bool Scenery::BlockOverEdgesPrataform()
         {
             return true;
         }
-        else if (plat.overBlock(b))
+        else if (plat.overBlock(b) && !b.operator==(plat.final_))
         {
             block.standUP();
             block.atual[2]-=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(0, 0, -1.5 / 2));
             return false;
         }
-        else if (plat.overBlock(b1))
+        else if (plat.overBlock(b1) && !b1.operator==(plat.final_))
         {
             block.standUP();
             block.atual[2]+=1.5/2;
@@ -128,10 +129,5 @@ bool Scenery::BlockOverEdgesPrataform()
             return false;
         }
     }
-    return false;
-}
-
-bool Scenery::CheckWin()
-{
     return false;
 }

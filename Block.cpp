@@ -29,7 +29,7 @@ void Block::reset()
     rotations = glm::vec3(0, 0, 0);
     rotate_vertical = glm::vec3(1, 0, 0);
     rotate_lateral = glm::vec3(0, 0, 1);
-    this->vel=0;
+    this->vel = 0;
 }
 void Block::Falling(float t_now)
 {
@@ -42,11 +42,11 @@ void Block::Falling(float t_now)
     //cout<<rotations<<std::endl;
     f = glm::translate(glm::mat4(1), glm::vec3(0, this->vel * dt, 0));
     MVP = MVP * f;
-     if(rotate_vertical == glm::vec3(0, 1, 0))
+    if (rotate_vertical == glm::vec3(0, 1, 0))
     {
         MVP = MVP * glm::rotate(glm::mat4(1), glm::radians(rotations[2]), glm::vec3(0, 0, 1));
     }
-    else if(rotate_lateral == glm::vec3(0, 1, 0))
+    else if (rotate_lateral == glm::vec3(0, 1, 0))
     {
         MVP = MVP * glm::rotate(glm::mat4(1), glm::radians(rotations[0]), glm::vec3(1, 0, 0));
     }
@@ -226,8 +226,12 @@ Block::Block(struct Vertex c, struct Vertex min, struct Vertex max)
     length = max.x - min.x;
     Object b = Object();
     MVP = b.MVP;
+    int r = 1000000;
     inicial_pos = glm::vec3(c.x, c.y, c.z);
     atual = inicial_pos;
+    atual[0] = round(atual[0] * r) / r;
+    atual[2] = round(atual[2] * r) / r;
+    atual[1] = round(atual[1] * r) / r;
     MVP = MVP * glm::translate(glm::mat4(1), inicial_pos);
     rotate_vertical = glm::vec3(0, 1, 0);
     rotate_lateral = glm::vec3(0, 0, 1);

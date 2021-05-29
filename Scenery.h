@@ -34,6 +34,5 @@ public:
     void addPlataform(Plataform b);
     void addBlock(Block b);
     bool BlockOverEdgesPrataform();
-    bool CheckWin();
 };
 #endif
