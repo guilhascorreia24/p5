@@ -119,9 +119,10 @@ int main()
   // delete shaders, we don't need them anymore
   block = Block("../../p5/objs/stoneBlock.obj");
   plat = Plataform("../../p5/objs/level1.obj");
+  Plataform floor = Plataform("../../p5/objs/floor1.obj");
   glm::mat4 Model = glm::mat4(1.0f);
 
-  level1 = Scenery(Projection * View * Model, block, plat);
+  level1 = Scenery(Projection * View * Model, block, plat, floor);
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
   //------------------------------------------------------------
@@ -129,8 +130,8 @@ int main()
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
 
-  unsigned int VBO[2];
-  unsigned int EBO[2];
+  unsigned int VBO[3];
+  unsigned int EBO[3];
   glGenBuffers(1, &VBO[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
@@ -138,6 +139,11 @@ int main()
   glGenBuffers(1, &VBO[1]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * level1.plat.n_vertexes, level1.plat.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &VBO[2]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * level1.floor.n_vertexes, level1.floor.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
@@ -164,6 +170,10 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, EBO[1]);
     glBufferData(GL_ARRAY_BUFFER, level1.plat.n_vertexes * 3 * sizeof(float), level1.plat.colors, GL_STATIC_DRAW);
     glEnableVertexAttribArray(1);
+    glGenBuffers(1, &EBO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, EBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, level1.floor.n_vertexes * 3 * sizeof(float), level1.floor.colors, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
 
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level1.plat.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
@@ -172,6 +182,13 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, level1.plat.n_vertexes);
+    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level1.floor.MVP[0][0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, EBO[2]);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDrawArrays(GL_TRIANGLES, 0, level1.floor.n_vertexes);
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level1.block.MVP[0][0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
@@ -180,19 +197,22 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDrawArrays(GL_TRIANGLES, 0, level1.block.n_vertexes);
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 3; i++)
     {
       glDeleteBuffers(1, &EBO[i]);
     }
     //cout<<level1.block.atual<<std::endl;
-    if (!colide){
+    if (!colide && !level1.block.Collisions(level1.objs))
+    {
       //printf("oi\n");
       level1.block.Falling(glfwGetTime());
-    }else{
+    }
+    else
+    {
       glfwSetTime(0);
     }
-    colide=level1.BlockOverEdgesPrataform();
-    
+    colide = level1.BlockOverEdgesPrataform();
+
     //cout << level.MVP << std::endl;
     //cout << block.MVP << std::endl;
     glfwSwapBuffers(window);
@@ -200,7 +220,7 @@ int main()
   }
 
   glDeleteVertexArrays(1, &VAO);
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 3; i++)
   {
 
     glDeleteBuffers(1, &VBO[i]);
@@ -218,13 +238,13 @@ void processInput(GLFWwindow *window, bool collide)
   glfwSetKeyCallback(window, moveBlock);
   if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
   {
-    View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Projection * View, level1.block, level1.plat);
+    View = glm::lookAt(glm::vec3(0, 25, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    level1 = Scenery(Projection * View, level1.block, level1.plat, level1.floor);
   }
   if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
   {
     View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Projection * View,level1.block, level1.plat);
+    level1 = Scenery(Projection * View, level1.block, level1.plat, level1.floor);
   }
 }
 
@@ -244,15 +264,14 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     level1.block.MVP = Projection * View;
     reposition(level1.block.inicial_pos, &level1);
     glfwSetTime(0);
-    
   }
 }
-void reposition(glm::vec3 v, Scenery* l)
+void reposition(glm::vec3 v, Scenery *l)
 {
   double dist = INT_MAX;
   Block t = Block();
   l->block.inicial_pos[1] = 0;
-  l->block.atual=l->block.inicial_pos;
+  l->block.atual = l->block.inicial_pos;
   l->block.MVP = l->MVP * glm::translate(glm::mat4(1), l->block.inicial_pos);
   for (Block o : l->plat.blocks)
   {
@@ -262,9 +281,8 @@ void reposition(glm::vec3 v, Scenery* l)
       t = o;
     }
   }
-  l->block.inicial_pos=t.inicial_pos;
+  l->block.inicial_pos = t.inicial_pos;
   //cout<<l->block.tostring()<<std::endl;
   l->block.MVP = Projection * View;
   l->block.reset();
-
 }

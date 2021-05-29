@@ -29,7 +29,7 @@ void Scenery::addPlataform(Plataform b)
     plat = b;
     for (Block o : b.blocks)
     {
-        objs.push_back(o);
+        //objs.push_back(o);
     }
 }
 void Scenery::addBlock(Block b)
@@ -37,18 +37,24 @@ void Scenery::addBlock(Block b)
     block = b;
     //objs.push_back(b);
 }
-Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p)
+Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform f)
 {
     this->MVP = MVP;
     block = b;
     plat = p;
-    cout << block.atual << std::endl;
+    floor=f;
+    //cout << block.atual << std::endl;
     block.MVP = MVP * glm::translate(glm::mat4(1), block.atual);
     block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
     //block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[1]), glm::vec3(0, 1, 0));
     block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
     plat.MVP = MVP * glm::translate(glm::mat4(1), plat.atual);
+    cout<<floor.atual<<std::endl;
+    this->floor.atual[1]=-8;
+    this->floor.MVP=MVP*glm::translate(glm::mat4(1), floor.atual);
     addPlataform(plat);
+    objs.push_back(floor);
+    //addPlataform(floor);
 };
 bool Scenery::BlockOverEdgesPrataform()
 {
@@ -96,7 +102,7 @@ bool Scenery::BlockOverEdgesPrataform()
                 return true;
             }
             block.standUP();
-            //block.atual[0]-=1.5/2;
+            block.atual[0]-=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(-1.5 / 2, 0, 0));
             return false;
         }
@@ -109,7 +115,7 @@ bool Scenery::BlockOverEdgesPrataform()
                 return true;
             }
             block.standUP();
-            //block.atual[0]+=1.5/2;
+            block.atual[0]+=1.5/2;
             block.MVP = glm::translate(block.MVP, glm::vec3(1.5 / 2, 0, 0));
             return false;
         }
