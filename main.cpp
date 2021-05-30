@@ -122,7 +122,7 @@ int main()
   Plataform floor = Plataform("../../p5/objs/floor1.obj");
   glm::mat4 Model = glm::mat4(1.0f);
 
-  level1 = Scenery(Scenery::Projection * Scenery::View * Model, block, plat);
+  level1 = Scenery(Scenery::Projection * Scenery::View * Model, block, plat, floor);
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
   //------------------------------------------------------------
@@ -238,12 +238,12 @@ void processInput(GLFWwindow *window, bool collide)
   glfwSetKeyCallback(window, moveBlock);
   if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
   {
-    View = glm::lookAt(glm::vec3(0, 25, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Scenery::View = glm::lookAt(glm::vec3(0, 25, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     level1 = Scenery(Scenery::Projection * Scenery::View, level1.block, level1.plat, level1.floor);
   }
   if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
   {
-    View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     level1 = Scenery(Scenery::Projection * Scenery::View, level1.block, level1.plat, level1.floor);
   }
 }

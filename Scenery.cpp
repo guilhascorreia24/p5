@@ -18,11 +18,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
+//#include <unistd.h>
 
 glm::mat4 Scenery::Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 glm::mat4 Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-#include <unistd.h>
+
 using namespace std;
 void Scenery::addObj(Object b)
 {
