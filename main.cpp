@@ -121,7 +121,7 @@ int main()
   plat = Plataform("../../p5/objs/level1.obj");
   glm::mat4 Model = glm::mat4(1.0f);
 
-  level1 = Scenery(Projection * View * Model, block, plat);
+  level1 = Scenery(Scenery::Projection * Scenery::View * Model, block, plat);
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
   //------------------------------------------------------------
@@ -222,13 +222,13 @@ void processInput(GLFWwindow *window, bool collide)
   glfwSetKeyCallback(window, moveBlock);
   if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
   {
-    View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Projection * View, level1.block, level1.plat);
+    Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    level1 = Scenery(Scenery::Projection * Scenery::View, level1.block, level1.plat);
   }
   if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
   {
-    View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Projection * View,level1.block, level1.plat);
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    level1 = Scenery(Scenery::Projection * Scenery::View,level1.block, level1.plat);
   }
 }
 
@@ -245,7 +245,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   }
   if (key == GLFW_KEY_R && action == GLFW_PRESS)
   {
-    level1.block.MVP = Projection * View;
+    level1.block.MVP = Scenery::Projection * Scenery::View;
     reposition(level1.block.inicial_pos, &level1);
     glfwSetTime(0.0);
     
@@ -267,7 +267,7 @@ void reposition(glm::vec3 v, Scenery* l)
     }
   }
   l->block.inicial_pos=t.inicial_pos;
-  l->block.MVP = Projection * View;
+  l->block.MVP = Scenery::Projection * Scenery::View;
   l->block.reset();
 
 }

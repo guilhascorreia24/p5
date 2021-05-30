@@ -116,7 +116,7 @@ Object::Object()
 {
     //glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
     //glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    MVP = Projection * View;
+    MVP = Scenery::Projection * Scenery::View;
 }
 
 void Object::setTexture(float r, float g, float b)
@@ -212,7 +212,7 @@ bool Object::Collisions(std::vector<Object> objs)
 }
 void Object::standUP()
 {
-    MVP = Projection * View * glm::translate(glm::mat4(1), atual);
+    MVP = Scenery::Projection * Scenery::View * glm::translate(glm::mat4(1), atual);
     height = max.y - min.y;
     width = max.z - min.z;
     length = max.x - min.x;

@@ -16,8 +16,6 @@ using namespace std;
 #include "Plataform.h"
 #include "Block.h"
 //glm::mat4 Projection,View;
- inline glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
- inline glm::mat4 View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 class Scenery
 {
 
@@ -32,5 +30,8 @@ public:
     void addPlataform(Plataform b);
     void addBlock(Block b);
     bool BlockOverEdgesPrataform();
+
+    static glm::mat4 Projection;
+    static glm::mat4 View;
 };
 #endif
