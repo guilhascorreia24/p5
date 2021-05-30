@@ -23,8 +23,10 @@ public:
     std::vector<Object> objs;
     glm::mat4 MVP;
     Plataform plat;
+    Plataform floor;
+    Plataform sky;
     Block block;
-    Scenery(glm::mat4 MVP, Block b, Plataform p);
+    Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor);
     Scenery() {}
     void addObj(Object b);
     void addPlataform(Plataform b);

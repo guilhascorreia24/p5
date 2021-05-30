@@ -19,6 +19,7 @@ class Block : public Object
 
 public:
     glm::vec3 rotations;
+    glm::vec3 rotate_vertical,rotate_lateral;
     Block(const char *f);
     Block(){};
     Block(struct Vertex c,struct Vertex min,struct Vertex max);
@@ -32,7 +33,6 @@ public:
     }
 
     private:
-        glm::vec3 rotate_vertical,rotate_lateral;
         glm::mat4 Rotations(int key);
         //glm::mat4 BlockRoll();
         void setRotations(float r,glm::vec3 ori);

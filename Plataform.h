@@ -15,17 +15,20 @@ using namespace std;
 #include "Block.h"
 #include "Object.h"
 
-class Plataform: public Object
+class Plataform : public Object
 {
 
 public:
-    std::vector<Block> blocks; 
+    std::vector<Block> blocks;
+    Block final_;
     Plataform(const char *f);
     Plataform(){};
+    bool overBlock(Block b);
 
-    private:
-        double distanceOther(glm::mat4 t);
-        void superiorFaces(struct Faces f);
-        void setBlocks();
+private:
+    double distanceOther(glm::mat4 t);
+    void superiorFaces(struct Faces f);
+    void setBlocks();
+    void findFinal();
 };
 #endif
