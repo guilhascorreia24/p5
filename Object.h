@@ -13,50 +13,22 @@ using namespace std;
 #include <glm/gtx/io.hpp>
 #include <vector>
 #include <set>
-struct Vertex
-{
-    float x, y, z;
-    bool operator==(struct Vertex const &b) const
-    {
-        //cout<<b.x<< " "<<this->x<< std::endl;
-        return this->x == b.x && this->y == b.y && this->z == b.z;
-    }
-    inline bool operator<(const Vertex &a) const
-    {
-        if (x < a.x)
-        {
-            return true;
-        }
-        if (x == a.x && y < a.y)
-        {
-            return true;
-        }
-        if (x == a.x && y == a.y && z < a.z)
-            return true;
-        return false;
-    }
-    string tostring()
-    {
-        return to_string(x) + " " + to_string(y) + " " + to_string(z);
-    }
-};
-struct Faces
-{
-    struct Vertex v[3];
+#include "Objscomps.h"
+
+struct VertexColorTexture{
+    struct Vertex v;
     struct Vertex c;
-    string tostring()
-    {
-        return v[0].tostring() + " " + v[1].tostring() + " " + v[2].tostring() + " ";
-    }
-    bool equals(struct Faces b)
-    {
-        return v[0].operator==(b.v[0]) && v[1].operator==(b.v[1]) && v[2].operator==(b.v[2]);
+    Texture texture;
+    VertexColorTexture(struct Vertex v,struct Vertex c,Texture t){
+        this->c=c;
+        this->v=v;
+        this->texture=t;
     }
 };
 class Object
 {
 public:
-    struct Vertex *vertex;
+    struct VertexColorTexture *vertex;
     int n_vertexes;
     float *colors;
     std::vector<struct Faces> faces;

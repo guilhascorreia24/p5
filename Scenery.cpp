@@ -54,7 +54,7 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform f)
     //block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[1]), glm::vec3(0, 1, 0));
     block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
     plat.MVP = MVP * glm::translate(glm::mat4(1), plat.atual);
-    cout<<floor.atual<<std::endl;
+    //cout<<floor.atual<<std::endl;
     this->floor.atual[1]=-8;
     this->floor.MVP=MVP*glm::translate(glm::mat4(1), floor.atual);
     addPlataform(plat);
@@ -91,8 +91,8 @@ bool Scenery::BlockOverEdgesPrataform()
         v.x = block.getcenter().x - 1.5 / 2;
         Block b1 = Block(v, v, v);
         //cout << b.tostring() << std::endl;
-        cout << (bool)(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]) << std::endl;
-        cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
+        //cout << (bool)(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]) << std::endl;
+        //cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
         if (plat.overBlock(b) && plat.overBlock(b1))
         {
             printf("sobre plat\n");
@@ -134,7 +134,7 @@ bool Scenery::BlockOverEdgesPrataform()
         Block b = Block(v, v, v);
         v.z = block.getcenter().z - 1.5 / 2;
         Block b1 = Block(v, v, v);
-        cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
+        //cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
         if (plat.overBlock(b) && plat.overBlock(b1))
         {
             printf("sobre plat\n");

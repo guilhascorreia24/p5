@@ -28,7 +28,7 @@ void Plataform::setBlocks()
         superiorFaces(f);
     }
     findFinal();
-    cout << blocks.size() << std::endl;
+    //cout << blocks.size() << std::endl;
 }
 
 void Plataform::superiorFaces(struct Faces face)
@@ -83,13 +83,9 @@ bool Plataform::overBlock(Block b)
 }
 void Plataform::findFinal()
 {
-    printf("findfinal\n");
+    //printf("findfinal\n");
     int r = 1000000;
-    cout << blocks.at(0).width << std::endl;
-    for (Block b : blocks)
-    {
-        cout << b.tostring() << std::endl;
-    }
+
     for (float i = min.x + blocks.at(0).length / 2; i < max.x; i += round(blocks.at(0).length * r) / r)
     {
         for (float j = min.z + blocks.at(0).width / 2; j < max.z; j += round(blocks.at(0).width * r) / r)
@@ -134,5 +130,5 @@ void Plataform::findFinal()
             }
         }
     }
-    cout << final_.tostring() << std::endl;
+    //cout << final_.tostring() << std::endl;
 }

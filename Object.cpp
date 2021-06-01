@@ -85,20 +85,20 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
         }
         fp.close();
         std::set<float> Y, X, Z;
-        this->vertex = (struct Vertex *)malloc((int)this->indexes.size() * sizeof(struct Vertex));
+        this->vertex = (struct VertexColorTexture *)malloc((int)this->indexes.size() * sizeof(struct VertexColorTexture));
         for (int i = 0; i < indexes.size(); i += 3)
         {
-            this->vertex[i] = v[this->indexes.at(i) - 1];
-            this->vertex[i + 1] = v[this->indexes.at(i + 1) - 1];
-            this->vertex[i + 2] = v[this->indexes.at(i + 2) - 1];
+            this->vertex[i] = VertexColorTexture(v[this->indexes.at(i) - 1], Vertex(1, 0, 0),Texture());
+            this->vertex[i + 1] = VertexColorTexture(v[this->indexes.at(i + 1) - 1],Vertex(0,1,0),Texture());
+            this->vertex[i + 2] = VertexColorTexture(v[this->indexes.at(i + 2) - 1], Vertex(0, 0,1),Texture());
             struct Faces f;
-            f.v[0] = this->vertex[i];
-            f.v[1] = this->vertex[i + 1];
-            f.v[2] = this->vertex[i + 2];
+            f.v[0] = this->vertex[i].v;
+            f.v[1] = this->vertex[i + 1].v;
+            f.v[2] = this->vertex[i + 2].v;
             faces.push_back(f);
-            Y.insert(vertex[i].y);
-            X.insert(vertex[i].x);
-            Z.insert(vertex[i].z);
+            Y.insert(vertex[i].v.y);
+            X.insert(vertex[i].v.x);
+            Z.insert(vertex[i].v.z);
         }
         max.x = *(X.rbegin());
         max.y = *(Y.rbegin());
@@ -123,11 +123,10 @@ void Object::setTexture(float r, float g, float b)
 {
     this->colors = (float *)malloc(this->n_vertexes * 3 * sizeof(float));
     int c = 0;
+    int x=0,y=1;
     for (int i = 0; i < this->n_vertexes; i++)
     {
-        this->colors[c++] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        this->colors[c++] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        this->colors[c++] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        this->vertex[i].texture=Texture((x++)%2-2,(y++)%2-2);
     }
 }
 /*bool Object::Collisions(std::vector<Object> objs)
@@ -188,7 +187,7 @@ bool Object::Collisions(std::vector<Object> objs)
             if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
             {
                 //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
-               // cout<<tostring()<<std::endl;
+                // cout<<tostring()<<std::endl;
                 //printf("colide up\n");
                 return true;
             }

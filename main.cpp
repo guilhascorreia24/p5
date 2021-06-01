@@ -5,19 +5,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include <iostream>
 #include "Block.h"
 #include "Plataform.h"
 #include "Scenery.h"
+#include "Objscomps.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window, bool collide);
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
 void reposition(glm::vec3 v, Scenery *l);
+void atributes(glm::mat4 g, unsigned int VBO);
 // settings
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
+unsigned int MatrixID;
 Block block;
 Plataform plat;
 Scenery level1;
@@ -25,23 +29,34 @@ bool colide = false;
 const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
                                  "layout (location = 1) in vec3 vertexColor;\n"
+                                 "layout (location = 2) in vec2 aTexCoord;\n"
                                  "out vec3 fragmentColor;\n"
+                                 "out vec2 TexCoord;\n"
                                  "uniform mat4 MVP;\n"
                                  "void main()\n"
                                  "{\n"
                                  "   gl_Position = MVP * vec4(aPos, 1.0);\n"
                                  "   fragmentColor = vertexColor;\n"
+                                 " TexCoord = aTexCoord;\n"
                                  "}\0";
 
 // declare and define fshader, position in color vector declaration
 // are RGBA from [0,1] simply in and out
 const char *fragmentShaderSource = "#version 330 core\n"
+                                   "out vec4 FragColor;\n"
+                                   "in vec2 TexCoord;\n"
+                                   "uniform sampler2D texture1;\n"
+                                   "void main()\n"
+                                   "{\n"
+                                   "   FragColor = texture(texture1, TexCoord) ;\n"
+                                   "}\n\0";
+/*const char *fragmentShaderSource = "#version 330 core\n"
                                    "in vec3 fragmentColor;\n;"
                                    "out vec3 FragColor;\n"
                                    "void main()\n"
                                    "{\n"
                                    "   FragColor = fragmentColor;\n"
-                                   "}\n\0";
+                                   "}\n\0";*/
 float xpos1, ypos1;
 int main()
 {
@@ -52,7 +67,8 @@ int main()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+  glfwWindowHint(GLFW_SAMPLES, 4);
+  //glEnable(GL_MULTISAMPLE); 
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -116,91 +132,84 @@ int main()
     std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
               << infoLog << std::endl;
   }
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
   // delete shaders, we don't need them anymore
+  MatrixID = glGetUniformLocation(shaderProgram, "MVP");
   block = Block("../../p5/objs/stoneBlock.obj");
   plat = Plataform("../../p5/objs/level1.obj");
   Plataform floor = Plataform("../../p5/objs/floor1.obj");
   glm::mat4 Model = glm::mat4(1.0f);
-
+  cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
   level1 = Scenery(Scenery::Projection * Scenery::View * Model, block, plat, floor);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
   //------------------------------------------------------------
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
 
   unsigned int VBO[3];
-  unsigned int EBO[3];
   glGenBuffers(1, &VBO[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
-
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
   glGenBuffers(1, &VBO[1]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * level1.plat.n_vertexes, level1.plat.vertex, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.plat.n_vertexes, level1.plat.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
 
   glGenBuffers(1, &VBO[2]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * level1.floor.n_vertexes, level1.floor.vertex, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.floor.n_vertexes, level1.floor.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
+  unsigned int texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+  // set the texture wrapping parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  // set texture filtering parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // load image, create texture and generate mipmaps
+  int width, height, nrChannels;
+  // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
+  unsigned char *data = stbi_load("C:/Users/gui-2/Desktop/cg/CG2020_21/p5/textures/vidro.png", &width, &height, &nrChannels, 0);
+  if (data)
+  {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+  else
+  {
+    std::cout << "Failed to load texture" << std::endl;
+  }
+  stbi_image_free(data);
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(block.inicial_pos, &level1);
 
   //level1.addObj(block);
   //timerun=glfwGetTime();
+  glUseProgram(shaderProgram);
   while (!glfwWindowShouldClose(window))
   {
-    unsigned int MatrixID = glGetUniformLocation(shaderProgram, "MVP");
     processInput(window, colide);
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindVertexArray(VAO);
 
-    glGenBuffers(1, &EBO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, EBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, level1.block.n_vertexes * 3 * sizeof(float), level1.block.colors, GL_STATIC_DRAW);
-    glGenBuffers(1, &EBO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, EBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, level1.plat.n_vertexes * 3 * sizeof(float), level1.plat.colors, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glGenBuffers(1, &EBO[2]);
-    glBindBuffer(GL_ARRAY_BUFFER, EBO[2]);
-    glBufferData(GL_ARRAY_BUFFER, level1.floor.n_vertexes * 3 * sizeof(float), level1.floor.colors, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level1.plat.MVP[0][0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, EBO[1]);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    atributes(level1.plat.MVP, VBO[1]);
     glDrawArrays(GL_TRIANGLES, 0, level1.plat.n_vertexes);
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level1.floor.MVP[0][0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, EBO[2]);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    atributes(level1.floor.MVP, VBO[2]);
     glDrawArrays(GL_TRIANGLES, 0, level1.floor.n_vertexes);
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &level1.block.MVP[0][0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, EBO[0]);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    atributes(level1.block.MVP, VBO[0]);
     glDrawArrays(GL_TRIANGLES, 0, level1.block.n_vertexes);
 
-    for (int i = 0; i < 3; i++)
-    {
-      glDeleteBuffers(1, &EBO[i]);
-    }
     //cout<<level1.block.atual<<std::endl;
     if (!colide && !level1.block.Collisions(level1.objs))
     {
@@ -285,4 +294,16 @@ void reposition(glm::vec3 v, Scenery *l)
   //cout<<l->block.tostring()<<std::endl;
   l->block.MVP = Scenery::Projection * Scenery::View;
   l->block.reset();
+}
+
+void atributes(glm::mat4 g, unsigned int VBO)
+{
+  glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &g[0][0]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)0);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
 }
