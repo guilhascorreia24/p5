@@ -338,7 +338,7 @@ void processInput(GLFWwindow *window, bool collide)
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
   }
-  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && level!=0)
   {
     atual_level = level1;
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -347,7 +347,7 @@ void processInput(GLFWwindow *window, bool collide)
     glfwSetTime(0);
     level = 0;
   }
-  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && level!=3)
   {
     atual_level = level2;
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -356,7 +356,7 @@ void processInput(GLFWwindow *window, bool collide)
     glfwSetTime(0);
     level = 3;
   }
-  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && level!=6)
   {
     atual_level = level3;
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -411,8 +411,8 @@ void atributes(glm::mat4 g, unsigned int VBO)
   glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &g[0][0]);
 
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Model"), 1, GL_FALSE, &Model[0][0]);
-  glUniform3fv(glGetUniformLocation(shaderProgram, "material.ambient"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-  glUniform3fv(glGetUniformLocation(shaderProgram, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.ambient"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.specular"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
   glUniform1f(glGetUniformLocation(shaderProgram, "material.shininess"), 32.0f);
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.ambient"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
