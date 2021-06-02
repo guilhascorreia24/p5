@@ -20,7 +20,7 @@ class Block : public Object
 public:
     glm::vec3 rotations;
     glm::vec3 rotate_vertical,rotate_lateral;
-    Block(const char *f);
+    Block(const char *f,const char *t);
     Block(){};
     Block(struct Vertex c,struct Vertex min,struct Vertex max);
     void block_reset();

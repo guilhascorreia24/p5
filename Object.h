@@ -15,14 +15,16 @@ using namespace std;
 #include <set>
 #include "Objscomps.h"
 
-struct VertexColorTexture{
+struct VertexColorTexture
+{
     struct Vertex v;
     struct Vertex c;
     Texture texture;
-    VertexColorTexture(struct Vertex v,struct Vertex c,Texture t){
-        this->c=c;
-        this->v=v;
-        this->texture=t;
+    VertexColorTexture(struct Vertex v, struct Vertex c, Texture t)
+    {
+        this->c = c;
+        this->v = v;
+        this->texture = t;
     }
 };
 class Object
@@ -30,16 +32,17 @@ class Object
 public:
     struct VertexColorTexture *vertex;
     int n_vertexes;
-    float *colors;
-    std::vector<struct Faces> faces;
+    unsigned char *data;
     glm::mat4 MVP;
     glm::vec3 inicial_pos, atual;
     struct Vertex max, min;
     float height, length, width;
+    int texture_width, texture_height;
 
     Object();
     void setVertexes(const char *c, struct Vertex *v, struct Faces *f);
-    void setTexture(float r, float g, float b);
+    void setTexture(const char *c);
+    void loadTextures();
     bool equals(Object b);
     double distanceObjects(Object *b);
     struct Vertex getcenter();
@@ -51,5 +54,8 @@ private:
     void getfaces(string s, string del);
     struct Vertex getvertex(string s, string del);
     std::vector<int> indexes;
+
+protected:
+    std::vector<struct Faces> faces;
 };
 #endif

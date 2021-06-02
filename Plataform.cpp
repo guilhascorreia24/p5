@@ -12,18 +12,18 @@
 #include <math.h>
 using namespace std;
 
-Plataform::Plataform(const char *c)
+Plataform::Plataform(const char *c,const char *t)
 {
     struct Vertex *v = (struct Vertex *)malloc(100000 * sizeof(struct Vertex));
     struct Faces *f = (struct Faces *)malloc(100000 * sizeof(struct Faces));
     this->setVertexes(c, v, f);
-    this->setTexture(0.2, 0.2, 0.2);
+    this->setTexture(t);
     setBlocks();
 }
 
 void Plataform::setBlocks()
 {
-    for (struct Faces f : faces)
+    for (struct Faces f : this->faces)
     {
         superiorFaces(f);
     }

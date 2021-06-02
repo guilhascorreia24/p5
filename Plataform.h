@@ -21,7 +21,7 @@ class Plataform : public Object
 public:
     std::vector<Block> blocks;
     Block final_;
-    Plataform(const char *f);
+    Plataform(const char *f,const char *t);
     Plataform(){};
     bool overBlock(Block b);
 

@@ -9,12 +9,12 @@
 #include "Block.h"
 #include "Scenery.h"
 using namespace std;
-Block::Block(const char *c)
+Block::Block(const char *c,const char *t)
 {
     struct Vertex *v = (struct Vertex *)malloc(100000 * sizeof(struct Vertex));
     struct Faces *f = (struct Faces *)malloc(100000 * sizeof(struct Faces));
     this->setVertexes(c, v, f);
-    this->setTexture(0.8, 0.8, 0.8);
+    this->setTexture(t);
     length = max.x - min.x;
     height = max.y - min.y;
     width = max.z - min.z;
