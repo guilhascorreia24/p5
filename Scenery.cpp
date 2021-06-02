@@ -67,8 +67,8 @@ bool Scenery::BlockOverEdgesPrataform()
     double dist = INT_MAX;
     bool line = false;
     std::vector<Object> obj;
-    cout << block.tostring() << ::endl;
-    cout << plat.final_.tostring() << std::endl;
+    //cout << block.tostring() << ::endl;
+    //cout << plat.final_.tostring() << std::endl;
     float size = plat.blocks.at(0).width;
     for (Object b : plat.blocks)
     {
@@ -124,7 +124,7 @@ bool Scenery::OverPlatformlying_down(glm::vec3 t)
 
 bool Scenery::OntheBorders(glm::vec3 a, glm::vec3 b, glm::vec3 move)
 {
-    cout << (bool)(OverPlatformlying_down(a) && OverPlatformlying_down(b)) << std::endl;
+    //cout << (bool)(OverPlatformlying_down(a) && OverPlatformlying_down(b)) << std::endl;
     if (OverPlatformlying_down(a) && OverPlatformlying_down(b))
     {
         return true;

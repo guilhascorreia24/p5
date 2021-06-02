@@ -20,44 +20,91 @@ void atributes(glm::mat4 g, unsigned int VBO);
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
 unsigned int MatrixID;
+unsigned int shaderProgram;
 Block block;
 Plataform plat;
 Scenery atual_level, level1, level2, level3;
 bool colide_floor = false;
 bool colide = false;
 int level = 0;
+glm::mat4 Model = glm::mat4(1.0f);
+glm::vec3 lightPos(10.0f, 5.0f, 5.0f);
 const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
                                  "layout (location = 1) in vec3 vertexColor;\n"
                                  "layout (location = 2) in vec2 aTexCoord;\n"
+                                 "layout (location = 3) in vec3 aNormal;\n"
                                  "out vec3 fragmentColor;\n"
+                                 "out vec3 FragPos;\n"
                                  "out vec2 TexCoord;\n"
                                  "uniform mat4 MVP;\n"
+                                 "out vec3 Normal;\n"
+                                 "uniform mat4 Model;\n"
                                  "void main()\n"
                                  "{\n"
                                  "   gl_Position = MVP * vec4(aPos, 1.0);\n"
                                  "   fragmentColor = vertexColor;\n"
                                  "    TexCoord = aTexCoord;\n"
+                                 "   Normal = mat3(transpose(inverse(Model))) * aNormal;\n"
+                                 "   FragPos = vec3(Model * vec4(aPos, 1.0));\n"
                                  "}\0";
 
 // declare and define fshader, position in color vector declaration
 // are RGBA from [0,1] simply in and out
 const char *fragmentShaderSource = "#version 330 core\n"
+                                   "in vec3 FragPos;\n"
+                                   "in vec3 Normal;\n"
+                                   // material properties
+                                   "struct Material {\n"
+                                   "  vec3 ambient;\n"
+                                   "  vec3 diffuse;\n"
+                                   "  vec3 specular;\n"
+                                   "  float shininess;\n"
+                                   "};\n"
+                                   // light source properties
+                                   "struct Light {\n"
+                                   "  vec3 ambient;\n"
+                                   "  vec3 diffuse;\n"
+                                   "  vec3 specular;\n"
+                                   "  vec3 position;\n"
+                                   "};\n"
+                                   "uniform vec3 viewPos;\n"
+                                   "uniform Light light;\n"
+                                   "uniform Material material;\n"
                                    "out vec4 FragColor;\n"
                                    "in vec2 TexCoord;\n"
                                    "in vec3 fragmentColor;\n"
                                    "uniform sampler2D texture1;\n"
                                    "void main()\n"
                                    "{\n"
-                                   "   FragColor = texture(texture1, TexCoord) ;\n"
+                                   //
+                                   //  ambient component
+                                   "   vec3 ambient = light.ambient * material.ambient;\n"
+                                   //
+                                   // diffuse component
+                                   // get incident light vector on fragment
+                                   "   vec3 lightDir = normalize(light.position - FragPos);\n"
+                                   // get normal at fragment
+                                   "   vec3 norm = normalize(Normal);\n"
+                                   // get cos of angle between normal and incident light from dot product
+                                   "   float diff = max(dot(norm, lightDir), 0.0);\n"
+                                   // diffuse illumination = diffuse light * material diffuse properties * cos(angle)
+                                   "   vec3 diffuse = light.diffuse * (diff * material.diffuse);\n"
+                                   //
+                                   // specular component
+                                   // viewer direction at fragment position
+                                   "   vec3 viewDir = normalize(viewPos - FragPos);\n"
+                                   // get reflection direction
+                                   "   vec3 reflectDir = reflect(-lightDir, norm);\n"
+                                   // specular = cos(angle) power to material properties
+                                   "   float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
+                                   // diffuse illumination = diffuse light * material diffuse properties * cos(angle)
+                                   // specular illumination = light specular * material specular properties * spec coefficient
+                                   "   vec3 specular = light.specular * (spec * material.specular);\n"
+                                   // sum of components and fragment out
+                                   "   vec3 result = ambient + diffuse + specular;\n"
+                                   "   FragColor = texture(texture1, TexCoord)*vec4(result,1.0f) ;\n"
                                    "}\n\0";
-/*const char *fragmentShaderSource = "#version 330 core\n"
-                                   "in vec3 fragmentColor;\n;"
-                                   "out vec3 FragColor;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "   FragColor = fragmentColor;\n"
-                                   "}\n\0";*/
 float xpos1, ypos1;
 int main()
 {
@@ -121,7 +168,7 @@ int main()
               << infoLog << std::endl;
   }
 
-  unsigned int shaderProgram = glCreateProgram();
+  shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
   glLinkProgram(shaderProgram);
@@ -136,7 +183,6 @@ int main()
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
   // delete shaders, we don't need them anymore
-  MatrixID = glGetUniformLocation(shaderProgram, "MVP");
   Block block1 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
   printf("level1\n");
   Plataform plat1 = Plataform("../../p5/objs/level1.obj", "../../p5/textures/vidro.png");
@@ -151,7 +197,7 @@ int main()
   printf("level3\n");
   Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
   Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
-  glm::mat4 Model = glm::mat4(1.0f);
+
   //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
   level1 = Scenery(Scenery::Projection * Scenery::View * Model, block1, plat1, floor1);
   level2 = Scenery(Scenery::Projection * Scenery::View * Model, block2, plat2, floor2);
@@ -214,11 +260,12 @@ int main()
   level3.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level3.block.inicial_pos, &level3);
 
-  atual_level=level1;
+  atual_level = level1;
 
   //atual_level.addObj(block);
   //timerun=glfwGetTime();
 
+      MatrixID = glGetUniformLocation(shaderProgram, "MVP");
   glUseProgram(shaderProgram);
   while (!glfwWindowShouldClose(window))
   {
@@ -286,7 +333,7 @@ void processInput(GLFWwindow *window, bool collide)
     Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
   }
-  if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
   {
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
@@ -362,6 +409,16 @@ void reposition(glm::vec3 v, Scenery *l)
 void atributes(glm::mat4 g, unsigned int VBO)
 {
   glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &g[0][0]);
+
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Model"), 1, GL_FALSE, &Model[0][0]);
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.ambient"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.specular"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "material.shininess"), 32.0f);
+  glUniform3fv(glGetUniformLocation(shaderProgram, "light.ambient"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "light.diffuse"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "light.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "light.position"), 1, glm::value_ptr(lightPos));
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)0);
   glEnableVertexAttribArray(0);
@@ -369,4 +426,7 @@ void atributes(glm::mat4 g, unsigned int VBO)
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
+  // normal attribute
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(8 * sizeof(float)));
+  glEnableVertexAttribArray(3);
 }

@@ -57,11 +57,8 @@ void Block::Moves(int key)
 {
     float ver;
     float radius = 90;
-    //glm::vec3 r=rotation;
     standUP();
-    //printf("\n");
     glm::mat4 f = glm::mat4(1), r = glm::mat4(1);
-    //cout<<rotate_lateral<<" "<<rotate_vertical<<std::endl;
     if (key == GLFW_KEY_UP)
     {
         f = glm::translate(f, glm::vec3(0, 0, -walk));
@@ -73,7 +70,7 @@ void Block::Moves(int key)
             height = exchange;
             ver = height / 2;
             f = glm::translate(f, glm::vec3(0, -ver, -walk / 2));
-            r = glm::rotate(r, glm::radians(-radius), rotate_vertical);
+            r = glm::rotate(r, glm::radians(rotations[0]-radius), rotate_vertical);
             //rotations += rotate_vertical * (-radius);
 
             rotate_lateral = glm::vec3(0, 1, 0);
@@ -214,6 +211,7 @@ void Block::Moves(int key)
     //cout << rotate_lateral << std::endl;
     //cout<<tostring()<<std::endl;
     glm::mat4 u = MVP * f * r;
+    Model=r;
     MVP = u;
 }
 

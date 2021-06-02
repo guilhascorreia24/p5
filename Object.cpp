@@ -58,6 +58,10 @@ void Object::getfaces(string s, string del) //parse de um(a) triangulo/face de u
         end_sub = k.find("/", start_sub);
         string p = k.substr(start_sub, end_sub - start_sub);
         this->indexes_vt.push_back(stoi(k.substr(start_sub, end_sub - start_sub)));
+        start_sub = end_sub + string("/").size();
+        end_sub = k.find("/", start_sub);
+         p = k.substr(start_sub, end_sub - start_sub);
+        this->indexes_vn.push_back(stoi(k.substr(start_sub, end_sub - start_sub)));
         start = end + del.size();
         end = s.find(del, start);
         //cout<<k<<std::endl;
@@ -70,6 +74,11 @@ void Object::getfaces(string s, string del) //parse de um(a) triangulo/face de u
     start_sub = end_sub + string("/").size();
     end_sub = k.find("/", start_sub);
     this->indexes_vt.push_back(stoi(k.substr(start_sub, end_sub - start_sub)));
+    start_sub = end_sub + string("/").size();
+    end_sub = k.find("/", start_sub);
+    string p = k.substr(start_sub, end_sub - start_sub);
+    this->indexes_vn.push_back(stoi(k.substr(start_sub, end_sub - start_sub)));
+    //cout<<k<<" "<<p<<std::endl;
     //cout << indexes.size() << std::endl;
 }
 void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // obter todos os triangulos de uma figura
@@ -84,6 +93,7 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
     else
     {
         std::vector<struct Texture> texture;
+        std::vector<struct Vertex> vn;
 
         int i = 0;
         string line;
@@ -105,18 +115,20 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
                 struct Vertex text = this->getvertex(line, " ");
                 texture.push_back(Texture(text.x, text.y));
             }
+            if (line.substr(0, line.find(" ")).compare("vn") == 0)
+            {
+                vn.push_back(this->getvertex(line, " "));
+            }
         }
         fp.close();
         std::set<float> Y, X, Z;
-        //cout << indexes_vt.size() << std::endl;
-        //cout << indexes_v.size() << std::endl;
         this->vertex = (struct VertexColorTexture *)malloc((int)this->indexes_v.size() * sizeof(struct VertexColorTexture));
         for (int i = 0; i < indexes_v.size(); i += 3)
         {
 
-            this->vertex[i] = VertexColorTexture(v[this->indexes_v.at(i) - 1], Vertex(1, 0, 0), Texture(texture.at(this->indexes_vt.at(i) - 1).y, texture.at(this->indexes_vt.at(i) - 1).x));
-            this->vertex[i + 1] = VertexColorTexture(v[this->indexes_v.at(i + 1) - 1], Vertex(0, 1, 0), Texture(texture.at(this->indexes_vt.at(i + 1) - 1).y, texture.at(this->indexes_vt.at(i + 1) - 1).x));
-            this->vertex[i + 2] = VertexColorTexture(v[this->indexes_v.at(i + 2) - 1], Vertex(0, 0, 1), Texture(texture.at(this->indexes_vt.at(i + 2) - 1).y, texture.at(this->indexes_vt.at(i + 2) - 1).x));
+            this->vertex[i] = VertexColorTexture(v[this->indexes_v.at(i) - 1], Vertex(1, 0, 0), Texture(texture.at(this->indexes_vt.at(i) - 1).y, texture.at(this->indexes_vt.at(i) - 1).x), vn.at(this->indexes_vn.at(i) - 1));
+            this->vertex[i + 1] = VertexColorTexture(v[this->indexes_v.at(i + 1) - 1], Vertex(0, 1, 0), Texture(texture.at(this->indexes_vt.at(i + 1) - 1).y, texture.at(this->indexes_vt.at(i + 1) - 1).x),vn.at(this->indexes_vn.at(i+1)-1));
+            this->vertex[i + 2] = VertexColorTexture(v[this->indexes_v.at(i + 2) - 1], Vertex(0, 0, 1), Texture(texture.at(this->indexes_vt.at(i + 2) - 1).y, texture.at(this->indexes_vt.at(i + 2) - 1).x),vn.at(this->indexes_vn.at(i+2)-1));
             struct Faces f;
             f.v[0] = this->vertex[i].v;
             f.v[1] = this->vertex[i + 1].v;
@@ -205,7 +217,7 @@ bool Object::Collisions(std::vector<Object> objs)
     bool collide = false;
     for (Object o : objs)
     {
-        if (atual[0] - o.min.x>pow(10,-6) && atual[0] - o.max.x <-pow(10,-6) && atual[2]  -o.min.z>pow(10,-6) && atual[2] - o.max.z<-pow(10,-6))
+        if (atual[0] - o.min.x > pow(10, -6) && atual[0] - o.max.x < -pow(10, -6) && atual[2] - o.min.z > pow(10, -6) && atual[2] - o.max.z < -pow(10, -6))
         {
             if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
             {

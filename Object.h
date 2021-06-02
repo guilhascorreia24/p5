@@ -20,11 +20,13 @@ struct VertexColorTexture
     struct Vertex v;
     struct Vertex c;
     Texture texture;
-    VertexColorTexture(struct Vertex v, struct Vertex c, Texture t)
+    struct Vertex vn;
+    VertexColorTexture(struct Vertex v, struct Vertex c, Texture t,struct Vertex vn)
     {
         this->c = c;
         this->v = v;
         this->texture = t;
+        this->vn=vn;
     }
 };
 class Object
@@ -33,7 +35,7 @@ public:
     struct VertexColorTexture *vertex;
     int n_vertexes;
     unsigned char *data;
-    glm::mat4 MVP;
+    glm::mat4 MVP,Model;
     glm::vec3 inicial_pos, atual;
     struct Vertex max, min;
     float height, length, width;
