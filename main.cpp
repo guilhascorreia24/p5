@@ -138,13 +138,17 @@ int main()
   // delete shaders, we don't need them anymore
   MatrixID = glGetUniformLocation(shaderProgram, "MVP");
   Block block1 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
+  printf("level1\n");
   Plataform plat1 = Plataform("../../p5/objs/level1.obj", "../../p5/textures/vidro.png");
   Plataform floor1 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
 
   Block block2 = Block("../../p5/objs/wood.obj", "../../p5/textures/predra.png");
+  printf("level2\n");
   Plataform plat2 = Plataform("../../p5/objs/level2.obj", "../../p5/textures/vidro.png");
   Plataform floor2 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+
   Block block3 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
+  printf("level3\n");
   Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
   Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
   glm::mat4 Model = glm::mat4(1.0f);
@@ -225,15 +229,15 @@ int main()
     glDepthFunc(GL_LESS);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(VAO);
-    printf("plat\n");
+    //printf("plat\n");
     atributes(atual_level.plat.MVP, VBO[1 + level]);
     atual_level.plat.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.plat.n_vertexes);
-    printf("floor\n");
+    //printf("floor\n");
     atributes(atual_level.floor.MVP, VBO[2 + level]);
     atual_level.floor.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.floor.n_vertexes);
-    printf("block\n");
+    //printf("block\n");
     atributes(atual_level.block.MVP, VBO[0 + level]);
     atual_level.block.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.block.n_vertexes);
@@ -290,7 +294,8 @@ void processInput(GLFWwindow *window, bool collide)
   if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
   {
     atual_level = level1;
-    atual_level.block.MVP = Scenery::Projection * Scenery::View;
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
     level = 0;
@@ -298,7 +303,8 @@ void processInput(GLFWwindow *window, bool collide)
   if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
   {
     atual_level = level2;
-    atual_level.block.MVP = Scenery::Projection * Scenery::View;
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
     level = 3;
@@ -306,7 +312,8 @@ void processInput(GLFWwindow *window, bool collide)
   if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
   {
     atual_level = level3;
-    atual_level.block.MVP = Scenery::Projection * Scenery::View;
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
     level = 6;

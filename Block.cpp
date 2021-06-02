@@ -59,7 +59,7 @@ void Block::Moves(int key)
     float radius = 90;
     //glm::vec3 r=rotation;
     standUP();
-    printf("\n");
+    //printf("\n");
     glm::mat4 f = glm::mat4(1), r = glm::mat4(1);
     //cout<<rotate_lateral<<" "<<rotate_vertical<<std::endl;
     if (key == GLFW_KEY_UP)

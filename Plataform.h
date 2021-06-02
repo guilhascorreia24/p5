@@ -30,5 +30,6 @@ private:
     void superiorFaces(struct Faces f);
     void setBlocks();
     void findFinal();
+    bool CheckIsBlock(Block b);
 };
 #endif

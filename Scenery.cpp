@@ -23,7 +23,6 @@
 glm::mat4 Scenery::Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 glm::mat4 Scenery::View = glm::lookAt(glm::vec3(5, 15, 20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-
 using namespace std;
 void Scenery::addObj(Object b)
 {
@@ -42,12 +41,12 @@ void Scenery::addBlock(Block b)
     block = b;
     //objs.push_back(b);
 }
-Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform f)
+Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
 {
     this->MVP = MVP;
     block = b;
     plat = p;
-    floor=f;
+    floor = f;
     //cout << block.atual << std::endl;
     block.MVP = MVP * glm::translate(glm::mat4(1), block.atual);
     block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
@@ -55,8 +54,8 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform f)
     block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
     plat.MVP = MVP * glm::translate(glm::mat4(1), plat.atual);
     //cout<<floor.atual<<std::endl;
-    this->floor.atual[1]=-8;
-    this->floor.MVP=MVP*glm::translate(glm::mat4(1), floor.atual);
+    this->floor.atual[1] = -8;
+    this->floor.MVP = MVP * glm::translate(glm::mat4(1), floor.atual);
     addPlataform(plat);
     objs.push_back(floor);
     block.setWalk(plat.blocks.at(0).width);
@@ -68,105 +67,77 @@ bool Scenery::BlockOverEdgesPrataform()
     double dist = INT_MAX;
     bool line = false;
     std::vector<Object> obj;
-    int r = 1000000;
-    //cout<<block.tostring()<<::endl;
-    //cout<<plat.final_.tostring()<<std::endl;
-    block.atual[0] = round(block.atual[0] * r) / r;
-    block.atual[2] = round(block.atual[2] * r) / r;
+    cout << block.tostring() << ::endl;
+    cout << plat.final_.tostring() << std::endl;
+    float size = plat.blocks.at(0).width;
     for (Object b : plat.blocks)
     {
         obj.push_back(b);
     }
+    glm::vec3 frente = block.atual + glm::vec3(0, 0, block.height / 4);
+    glm::vec3 tras = block.atual + glm::vec3(0, 0, -block.height / 4);
+    glm::vec3 direita = block.atual + glm::vec3(block.height / 4, 0, 0);
+    glm::vec3 esquerda = block.atual + glm::vec3(-block.height / 4, 0, 0);
     //cout << block.tostring() << std::endl;
     if (block.Collisions(obj))
     {
-        return true;
-    }
-    if (block.rotate_vertical == glm::vec3(0, 1, 0))
-    {
-        struct Vertex v;
-        v.x = block.getcenter().x + 1.5 / 2;
-        v.y = block.getcenter().y;
-        v.z = block.getcenter().z;
-        Block b = Block(v, v, v);
-        v.x = block.getcenter().x - 1.5 / 2;
-        Block b1 = Block(v, v, v);
-        //cout << b.tostring() << std::endl;
-        //cout << (bool)(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]) << std::endl;
-        //cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
-        if (plat.overBlock(b) && plat.overBlock(b1))
+        if (block.rotate_lateral == glm::vec3(0, 1, 0))
         {
-            printf("sobre plat\n");
+
+            return OntheBorders(frente, tras, glm::vec3(0, 0, block.height / 4));
+        }
+        else if (block.rotate_vertical == glm::vec3(0, 1, 0))
+        {
+            return OntheBorders(direita, esquerda, glm::vec3(block.height / 4, 0, 0));
+        }else
             return true;
-        }
-        else if (plat.overBlock(b))
-        {
-            printf("falta 1 vert - plat\n");
-            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
-            {
-                printf("sob o final\n");
-                return true;
-            }
-            block.standUP();
-            block.atual[0]-=1.5/2;
-            block.MVP = glm::translate(block.MVP, glm::vec3(-1.5 / 2, 0, 0));
-            return false;
-        }
-        else if (plat.overBlock(b1))
-        {
-            printf("falta 1 vert + plat\n");
-            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
-            {
-                printf("sob o final\n");
-                return true;
-            }
-            block.standUP();
-            block.atual[0]+=1.5/2;
-            block.MVP = glm::translate(block.MVP, glm::vec3(1.5 / 2, 0, 0));
-            return false;
-        }
     }
     if (block.rotate_lateral == glm::vec3(0, 1, 0))
     {
-        struct Vertex v;
-        v.z = block.getcenter().z + 1.5 / 2;
-        v.y = block.getcenter().y;
-        v.x = block.getcenter().x;
-        Block b = Block(v, v, v);
-        v.z = block.getcenter().z - 1.5 / 2;
-        Block b1 = Block(v, v, v);
-        //cout << b.tostring() << " " << b1.tostring() << " " << plat.final_.tostring() << std::endl;
-        if (plat.overBlock(b) && plat.overBlock(b1))
+
+        return OntheBorders(frente, tras, glm::vec3(0, 0, block.height / 4));
+    }
+    if (block.rotate_vertical == glm::vec3(0, 1, 0))
+    {
+        return OntheBorders(direita, esquerda, glm::vec3(block.height / 4, 0, 0));
+    }
+
+    return false;
+}
+
+bool Scenery::OverPlatformlying_down(glm::vec3 t)
+{
+    for (Block b : plat.blocks)
+    {
+        if (t[0] > b.min.x && t[0] < b.max.x && t[2] > b.min.z && t[2] < b.max.z)
         {
-            printf("sobre plat\n");
             return true;
         }
-        else if (plat.overBlock(b))
-        {
-            printf("falta 1 lat - plat\n");
-            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
-            {
-                printf("sob o final\n");
-                return true;
-            }
-            block.standUP();
-            block.atual[2] -= 1.5 / 2;
-            block.MVP = glm::translate(block.MVP, glm::vec3(0, 0, -1.5 / 2));
-            return false;
-        }
-        else if (plat.overBlock(b1))
-        {
-            printf("falta 1 lat +plat\n");
-            if ((b1.atual[0] == plat.final_.atual[0] && b1.atual[2] == plat.final_.atual[2])||(b.atual[0] == plat.final_.atual[0] && b.atual[2] == plat.final_.atual[2]))
-            {
-                printf("sob o final\n");
-                return true;
-            }
-                block.standUP();
-            block.atual[2] += 1.5 / 2;
-            block.MVP = glm::translate(block.MVP, glm::vec3(0, 0, 1.5 / 2));
-            return false;
-        }
+    }
+    Block b = plat.final_;
+    if (t[0] > b.min.x && t[0] < b.max.x && t[2] > b.min.z && t[2] < b.max.z)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Scenery::OntheBorders(glm::vec3 a, glm::vec3 b, glm::vec3 move)
+{
+    cout << (bool)(OverPlatformlying_down(a) && OverPlatformlying_down(b)) << std::endl;
+    if (OverPlatformlying_down(a) && OverPlatformlying_down(b))
+    {
+        return true;
+    }
+    if (OverPlatformlying_down(a) && !OverPlatformlying_down(b))
+    {
+        block.atual -= move;
+        return false;
+    }
+    if (!OverPlatformlying_down(a) && OverPlatformlying_down(b))
+    {
+        block.atual += move;
+        return false;
     }
     return false;
 }

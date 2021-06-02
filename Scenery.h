@@ -35,5 +35,9 @@ public:
 
     static glm::mat4 Projection;
     static glm::mat4 View;
+
+private:
+    bool OverPlatformlying_down(glm::vec3 b);
+    bool OntheBorders(glm::vec3 a,glm::vec3 b,glm::vec3 move);
 };
 #endif

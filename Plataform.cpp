@@ -12,7 +12,7 @@
 #include <math.h>
 using namespace std;
 
-Plataform::Plataform(const char *c,const char *t)
+Plataform::Plataform(const char *c, const char *t)
 {
     struct Vertex *v = (struct Vertex *)malloc(100000 * sizeof(struct Vertex));
     struct Faces *f = (struct Faces *)malloc(100000 * sizeof(struct Faces));
@@ -84,11 +84,14 @@ bool Plataform::overBlock(Block b)
 void Plataform::findFinal()
 {
     //printf("findfinal\n");
+    cout << blocks.at(0).width << " " << blocks.at(0).length << std::endl;
     int r = 1000000;
-
-    for (float i = min.x + blocks.at(0).length / 2; i < max.x; i += round(blocks.at(0).length * r) / r)
+    /*for(Block b:blocks){
+        cout<<b.tostring()<<std::endl;
+    }*/
+    for (float i = min.x + blocks.at(0).length/2; i < max.x; i +=blocks.at(0).length )
     {
-        for (float j = min.z + blocks.at(0).width / 2; j < max.z; j += round(blocks.at(0).width * r) / r)
+        for (float j = min.z + blocks.at(0).width/2; j < max.z; j += blocks.at(0).width )
         {
             struct Vertex v, v2;
             v.x = round(i * r) / r;
@@ -107,20 +110,12 @@ void Plataform::findFinal()
             v2 = v;
             v2.x -= blocks.at(0).width;
             Block o = Block(v2, v2, v2);
-            //cout<<b.tostring()<<std::endl;
-            /*cout<<n.tostring()<<std::endl;
-            cout<<s.tostring()<<std::endl;
-            cout<<e.tostring()<<std::endl;
-            cout<<o.tostring()<<std::endl;*/
-            //cout<<(bool)(find(blocks.begin(), blocks.end(), b) != blocks.end())<<std::endl;
-            if (find(blocks.begin(), blocks.end(), b) == blocks.end() && find(blocks.begin(), blocks.end(), n) != blocks.end() &&
-                find(blocks.begin(), blocks.end(), s) != blocks.end() && find(blocks.begin(), blocks.end(), e) != blocks.end() &&
-                find(blocks.begin(), blocks.end(), o) != blocks.end())
+            if (!CheckIsBlock(b) && CheckIsBlock(n) && CheckIsBlock(s) && CheckIsBlock(e) && CheckIsBlock(o))
             {
                 final_ = b;
-                final_.atual[0]=round((final_.atual[0]) * r) / r;
-                final_.atual[1]=round((final_.atual[1]) * r) / r;
-                final_.atual[2]=round((final_.atual[2]) * r) / r;
+                final_.atual[0] = round((final_.atual[0]) * r) / r;
+                final_.atual[1] = round((final_.atual[1]) * r) / r;
+                final_.atual[2] = round((final_.atual[2]) * r) / r;
                 final_.max.x = round((final_.atual[0] + blocks.at(0).length / 2) * r) / r;
                 final_.max.z = round((final_.atual[2] + blocks.at(0).width / 2) * r) / r;
                 final_.max.y = round((final_.atual[1] + blocks.at(0).height / 2) * r) / r;
@@ -130,5 +125,13 @@ void Plataform::findFinal()
             }
         }
     }
-    cout << final_.tostring() << std::endl;
+      cout << final_.tostring() << std::endl;
+}
+bool Plataform::CheckIsBlock(Block o){
+    for(Block b:blocks){
+        if(o.atual[0]<=b.max.x && o.atual[0]>=b.min.x && o.atual[2]<=b.max.z && o.atual[2]>=b.min.z && o.atual[1]>=b.min.y && o.atual[1]<=b.max.y){
+            return true;
+        }
+    }
+    return false;
 }

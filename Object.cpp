@@ -108,8 +108,8 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
         }
         fp.close();
         std::set<float> Y, X, Z;
-        cout << indexes_vt.size() << std::endl;
-        cout << indexes_v.size() << std::endl;
+        //cout << indexes_vt.size() << std::endl;
+        //cout << indexes_v.size() << std::endl;
         this->vertex = (struct VertexColorTexture *)malloc((int)this->indexes_v.size() * sizeof(struct VertexColorTexture));
         for (int i = 0; i < indexes_v.size(); i += 3)
         {
@@ -197,7 +197,7 @@ struct Vertex Object::getcenter()
 
 string Object::tostring()
 {
-    return to_string(atual[0]) + " " + to_string(atual[1]) + " " + to_string(atual[2]) + "\n";
+    return to_string(atual[0]) + " " + to_string(atual[1]) + " " + to_string(atual[2]);
 }
 
 bool Object::Collisions(std::vector<Object> objs)
@@ -205,13 +205,14 @@ bool Object::Collisions(std::vector<Object> objs)
     bool collide = false;
     for (Object o : objs)
     {
-        if (atual[0] > o.min.x && atual[0] < o.max.x && atual[2] > o.min.z && atual[2] < o.max.z)
+        if (atual[0] - o.min.x>pow(10,-6) && atual[0] - o.max.x <-pow(10,-6) && atual[2]  -o.min.z>pow(10,-6) && atual[2] - o.max.z<-pow(10,-6))
         {
             if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
             {
-                //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
-                // cout<<tostring()<<std::endl;
-                //printf("colide up\n");
+                /*cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
+                cout<<tostring()<<std::endl;
+                cout<<atual[0]-o.max.x<<std::endl;
+                printf("colide up\n");*/
                 return true;
             }
             if (atual[1] > o.min.y && atual[1] < o.max.y)
