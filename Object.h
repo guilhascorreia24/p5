@@ -48,12 +48,13 @@ public:
     struct Vertex getcenter();
     bool Collisions(std::vector<Object> o);
     string tostring();
+    bool Collide(Object o);
     void standUP();
 
 private:
     void getfaces(string s, string del);
     struct Vertex getvertex(string s, string del);
-    std::vector<int> indexes;
+    std::vector<int> indexes_v,indexes_vt,indexes_vn;
 
 protected:
     std::vector<struct Faces> faces;

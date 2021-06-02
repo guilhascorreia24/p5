@@ -31,8 +31,10 @@ public:
     {
         return atual[0]==b.atual[0] && atual[1]==b.atual[1] && atual[2]==b.atual[2];
     }
+    void setWalk(float x){this->walk=x;}
 
     private:
+        float walk;
         glm::mat4 Rotations(int key);
         //glm::mat4 BlockRoll();
         void setRotations(float r,glm::vec3 ori);

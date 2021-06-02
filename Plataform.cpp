@@ -130,5 +130,5 @@ void Plataform::findFinal()
             }
         }
     }
-    //cout << final_.tostring() << std::endl;
+    cout << final_.tostring() << std::endl;
 }

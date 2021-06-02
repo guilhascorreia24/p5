@@ -22,8 +22,10 @@ const unsigned int SCR_HEIGHT = 800;
 unsigned int MatrixID;
 Block block;
 Plataform plat;
-Scenery level1;
+Scenery atual_level, level1, level2, level3;
+bool colide_floor = false;
 bool colide = false;
+int level = 0;
 const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
                                  "layout (location = 1) in vec3 vertexColor;\n"
@@ -135,18 +137,27 @@ int main()
   glDeleteShader(fragmentShader);
   // delete shaders, we don't need them anymore
   MatrixID = glGetUniformLocation(shaderProgram, "MVP");
-  block = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
-  plat = Plataform("../../p5/objs/level1.obj", "../../p5/textures/vidro.png");
-  Plataform floor = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+  Block block1 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
+  Plataform plat1 = Plataform("../../p5/objs/level1.obj", "../../p5/textures/vidro.png");
+  Plataform floor1 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+
+  Block block2 = Block("../../p5/objs/wood.obj", "../../p5/textures/predra.png");
+  Plataform plat2 = Plataform("../../p5/objs/level2.obj", "../../p5/textures/vidro.png");
+  Plataform floor2 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+  Block block3 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
+  Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
+  Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
   glm::mat4 Model = glm::mat4(1.0f);
-  cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
-  level1 = Scenery(Scenery::Projection * Scenery::View * Model, block, plat, floor);
+  //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
+  level1 = Scenery(Scenery::Projection * Scenery::View * Model, block1, plat1, floor1);
+  level2 = Scenery(Scenery::Projection * Scenery::View * Model, block2, plat2, floor2);
+  level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3);
   //------------------------------------------------------------
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
-
-  unsigned int VBO[3];
+  printf("oi\n");
+  unsigned int VBO[9];
   glGenBuffers(1, &VBO[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
@@ -162,11 +173,48 @@ int main()
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.floor.n_vertexes, level1.floor.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
 
-  level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
-  reposition(block.inicial_pos, &level1);
+  glGenBuffers(1, &VBO[3]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.block.n_vertexes, level2.block.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
 
-  //level1.addObj(block);
+  glGenBuffers(1, &VBO[4]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.plat.n_vertexes, level2.plat.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &VBO[5]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[5]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.floor.n_vertexes, level2.floor.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &VBO[6]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.block.n_vertexes, level3.block.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &VBO[7]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.plat.n_vertexes, level3.plat.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &VBO[8]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.floor.n_vertexes, level3.floor.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+
+  level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
+  reposition(level1.block.inicial_pos, &level1);
+  level2.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
+  reposition(level2.block.inicial_pos, &level2);
+  level3.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
+  reposition(level3.block.inicial_pos, &level3);
+
+  atual_level=level1;
+
+  //atual_level.addObj(block);
   //timerun=glfwGetTime();
+
   glUseProgram(shaderProgram);
   while (!glfwWindowShouldClose(window))
   {
@@ -177,29 +225,35 @@ int main()
     glDepthFunc(GL_LESS);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(VAO);
+    printf("plat\n");
+    atributes(atual_level.plat.MVP, VBO[1 + level]);
+    atual_level.plat.loadTextures();
+    glDrawArrays(GL_TRIANGLES, 0, atual_level.plat.n_vertexes);
+    printf("floor\n");
+    atributes(atual_level.floor.MVP, VBO[2 + level]);
+    atual_level.floor.loadTextures();
+    glDrawArrays(GL_TRIANGLES, 0, atual_level.floor.n_vertexes);
+    printf("block\n");
+    atributes(atual_level.block.MVP, VBO[0 + level]);
+    atual_level.block.loadTextures();
+    glDrawArrays(GL_TRIANGLES, 0, atual_level.block.n_vertexes);
 
-    atributes(level1.plat.MVP, VBO[1]);
-    level1.plat.loadTextures();
-    glDrawArrays(GL_TRIANGLES, 0, level1.plat.n_vertexes);
-    atributes(level1.floor.MVP, VBO[2]);
-    level1.floor.loadTextures();
-    glDrawArrays(GL_TRIANGLES, 0, level1.floor.n_vertexes);
-    atributes(level1.block.MVP, VBO[0]);
-    level1.block.loadTextures();
-    glDrawArrays(GL_TRIANGLES, 0, level1.block.n_vertexes);
-
-    //cout<<level1.block.atual<<std::endl;
-    if (!colide && !level1.block.Collisions(level1.objs))
+    //cout<<atual_level.block.atual<<std::endl;
+    if (!colide && !atual_level.block.Collisions(atual_level.objs))
     {
       //printf("oi\n");
-      level1.block.Falling(glfwGetTime());
+      atual_level.block.Falling(glfwGetTime());
     }
     else
     {
       glfwSetTime(0);
     }
-    colide = level1.BlockOverEdgesPrataform();
-
+    colide = atual_level.BlockOverEdgesPrataform();
+    if (atual_level.block.Collide(atual_level.floor))
+    {
+      atual_level.block.standUP();
+      atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
+    }
     //cout << level.MVP << std::endl;
     //cout << block.MVP << std::endl;
     glfwSwapBuffers(window);
@@ -223,15 +277,39 @@ void processInput(GLFWwindow *window, bool collide)
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   glfwSetKeyCallback(window, moveBlock);
-  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
   {
     Scenery::View = glm::lookAt(glm::vec3(0, 25, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Scenery::Projection * Scenery::View, level1.block, level1.plat, level1.floor);
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
   }
-  if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
   {
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    level1 = Scenery(Scenery::Projection * Scenery::View, level1.block, level1.plat, level1.floor);
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+  }
+  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+  {
+    atual_level = level1;
+    atual_level.block.MVP = Scenery::Projection * Scenery::View;
+    reposition(atual_level.block.inicial_pos, &atual_level);
+    glfwSetTime(0);
+    level = 0;
+  }
+  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+  {
+    atual_level = level2;
+    atual_level.block.MVP = Scenery::Projection * Scenery::View;
+    reposition(atual_level.block.inicial_pos, &atual_level);
+    glfwSetTime(0);
+    level = 3;
+  }
+  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+  {
+    atual_level = level3;
+    atual_level.block.MVP = Scenery::Projection * Scenery::View;
+    reposition(atual_level.block.inicial_pos, &atual_level);
+    glfwSetTime(0);
+    level = 6;
   }
 }
 
@@ -244,12 +322,12 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
   if ((key == GLFW_KEY_DOWN || key == GLFW_KEY_LEFT || key == GLFW_KEY_UP || key == GLFW_KEY_RIGHT) && action == GLFW_PRESS && colide)
   {
-    level1.block.Moves(key);
+    atual_level.block.Moves(key);
   }
   if (key == GLFW_KEY_R && action == GLFW_PRESS)
   {
-    level1.block.MVP = Scenery::Projection * Scenery::View;
-    reposition(level1.block.inicial_pos, &level1);
+    atual_level.block.MVP = Scenery::Projection * Scenery::View;
+    reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
   }
 }
@@ -285,4 +363,3 @@ void atributes(glm::mat4 g, unsigned int VBO)
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
 }
-

@@ -59,6 +59,7 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform f)
     this->floor.MVP=MVP*glm::translate(glm::mat4(1), floor.atual);
     addPlataform(plat);
     objs.push_back(floor);
+    block.setWalk(plat.blocks.at(0).width);
     //addPlataform(floor);
 };
 bool Scenery::BlockOverEdgesPrataform()

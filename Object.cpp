@@ -23,7 +23,7 @@ struct Vertex Object::getvertex(string s, string del) //parse de uma coordenada
 {
     int start = 0;
     int end = s.find(del);
-    float *coord = (float *)malloc(3 * sizeof(float));
+    float *coord = (float *)calloc(3, 3 * sizeof(float));
     int i = 0;
     start = end + del.size();
     end = s.find(del, start);
@@ -51,12 +51,25 @@ void Object::getfaces(string s, string del) //parse de um(a) triangulo/face de u
     while (end != -1)
     {
         string k = s.substr(start, end - start);
-        this->indexes.push_back(stoi(k.substr(0, k.find("/"))));
+        int start_sub = 0;
+        int end_sub = k.find("/");
+        this->indexes_v.push_back(stoi(k.substr(0, end_sub)));
+        start_sub = end_sub + string("/").size();
+        end_sub = k.find("/", start_sub);
+        string p = k.substr(start_sub, end_sub - start_sub);
+        this->indexes_vt.push_back(stoi(k.substr(start_sub, end_sub - start_sub)));
         start = end + del.size();
         end = s.find(del, start);
+        //cout<<k<<std::endl;
+        // cout<<p<<std::endl;
     }
     string k = s.substr(start, end - start);
-    this->indexes.push_back(stoi(k.substr(0, k.find("/"))));
+    int start_sub = 0;
+    int end_sub = k.find("/");
+    this->indexes_v.push_back(stoi(k.substr(0, end_sub)));
+    start_sub = end_sub + string("/").size();
+    end_sub = k.find("/", start_sub);
+    this->indexes_vt.push_back(stoi(k.substr(start_sub, end_sub - start_sub)));
     //cout << indexes.size() << std::endl;
 }
 void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // obter todos os triangulos de uma figura
@@ -70,9 +83,11 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
     }
     else
     {
+        std::vector<struct Texture> texture;
+
         int i = 0;
         string line;
-        int f = 0;
+        int f = 0, c = 0;
         while (getline(fp, line))
         {
             if (line.substr(0, line.find(" ")).compare("v") == 0)
@@ -85,15 +100,23 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
                 this->getfaces(line, " ");
                 f++;
             }
+            if (line.substr(0, line.find(" ")).compare("vt") == 0)
+            {
+                struct Vertex text = this->getvertex(line, " ");
+                texture.push_back(Texture(text.x, text.y));
+            }
         }
         fp.close();
         std::set<float> Y, X, Z;
-        this->vertex = (struct VertexColorTexture *)malloc((int)this->indexes.size() * sizeof(struct VertexColorTexture));
-        for (int i = 0; i < indexes.size(); i += 3)
+        cout << indexes_vt.size() << std::endl;
+        cout << indexes_v.size() << std::endl;
+        this->vertex = (struct VertexColorTexture *)malloc((int)this->indexes_v.size() * sizeof(struct VertexColorTexture));
+        for (int i = 0; i < indexes_v.size(); i += 3)
         {
-            this->vertex[i] = VertexColorTexture(v[this->indexes.at(i) - 1], Vertex(1, 0, 0), Texture());
-            this->vertex[i + 1] = VertexColorTexture(v[this->indexes.at(i + 1) - 1], Vertex(0, 1, 0), Texture());
-            this->vertex[i + 2] = VertexColorTexture(v[this->indexes.at(i + 2) - 1], Vertex(0, 0, 1), Texture());
+
+            this->vertex[i] = VertexColorTexture(v[this->indexes_v.at(i) - 1], Vertex(1, 0, 0), Texture(texture.at(this->indexes_vt.at(i) - 1).y, texture.at(this->indexes_vt.at(i) - 1).x));
+            this->vertex[i + 1] = VertexColorTexture(v[this->indexes_v.at(i + 1) - 1], Vertex(0, 1, 0), Texture(texture.at(this->indexes_vt.at(i + 1) - 1).y, texture.at(this->indexes_vt.at(i + 1) - 1).x));
+            this->vertex[i + 2] = VertexColorTexture(v[this->indexes_v.at(i + 2) - 1], Vertex(0, 0, 1), Texture(texture.at(this->indexes_vt.at(i + 2) - 1).y, texture.at(this->indexes_vt.at(i + 2) - 1).x));
             struct Faces f;
             f.v[0] = this->vertex[i].v;
             f.v[1] = this->vertex[i + 1].v;
@@ -112,7 +135,7 @@ void Object::setVertexes(const char *c, struct Vertex *v, struct Faces *f) // ob
         length = max.x - min.x;
         width = max.z - min.z;
         height = max.y - min.y;
-        this->n_vertexes = this->indexes.size();
+        this->n_vertexes = this->indexes_v.size();
     }
 }
 Object::Object()
@@ -142,11 +165,6 @@ void Object::setTexture(const char *c)
     //cout << fullFilename << std::endl;
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
     data = stbi_load(fullFilename, &texture_width, &texture_height, &nrChannels, 0);
-    int x = 0, y = 1;
-    for (int i = 0; i < this->n_vertexes; i++)
-    {
-        this->vertex[i].texture = Texture((x++) % 2 - 2, (y++) % 2 - 2);
-    }
 }
 
 bool Object::equals(Object b)
@@ -213,6 +231,33 @@ bool Object::Collisions(std::vector<Object> objs)
     }
     return collide;
 }
+bool Object::Collide(Object o)
+{
+    if (atual[0] > o.min.x && atual[0] < o.max.x && atual[2] > o.min.z && atual[2] < o.max.z)
+    {
+        if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
+        {
+            //cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
+            // cout<<tostring()<<std::endl;
+            //printf("colide up\n");
+            return true;
+        }
+        if (atual[1] > o.min.y && atual[1] < o.max.y)
+        {
+            if ((abs(atual[0] - o.atual[0]) < (o.length / 2) + (length / 2)))
+            {
+                //printf("colide fesquerda/direta\n");
+                return true;
+            }
+            if ((abs(atual[2] - o.atual[2]) < (o.width / 2) + (width / 2)))
+            {
+                //printf("colide frente/atras\n");
+                return true;
+            }
+        }
+    }
+    return false;
+}
 void Object::standUP()
 {
     MVP = Scenery::Projection * Scenery::View * glm::translate(glm::mat4(1), atual);
@@ -234,6 +279,4 @@ void Object::loadTextures()
         std::cout << "Failed to load texture" << std::endl;
     }
     //stbi_image_free(data);
-
-
 }

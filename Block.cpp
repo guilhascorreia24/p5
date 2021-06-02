@@ -55,7 +55,7 @@ void Block::Falling(float t_now)
 }
 void Block::Moves(int key)
 {
-    float walk = 1.5, ver;
+    float ver;
     float radius = 90;
     //glm::vec3 r=rotation;
     standUP();

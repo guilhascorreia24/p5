@@ -44,6 +44,7 @@ struct Faces
 {
     struct Vertex v[3];
     struct Vertex c;
+    struct Vertex vt[3];
     string tostring()
     {
         return v[0].tostring() + " " + v[1].tostring() + " " + v[2].tostring() + " ";
