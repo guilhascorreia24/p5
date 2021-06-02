@@ -142,10 +142,10 @@ int main()
   Plataform plat1 = Plataform("../../p5/objs/level1.obj", "../../p5/textures/vidro.png");
   Plataform floor1 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
 
-  Block block2 = Block("../../p5/objs/wood.obj", "../../p5/textures/predra.png");
+  Block block2 = Block("../../p5/objs/wood.obj", "../../p5/textures/wood.png");
   printf("level2\n");
-  Plataform plat2 = Plataform("../../p5/objs/level2.obj", "../../p5/textures/vidro.png");
-  Plataform floor2 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+  Plataform plat2 = Plataform("../../p5/objs/level2.obj", "../../p5/textures/relva.png");
+  Plataform floor2 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/terra.png");
 
   Block block3 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
   printf("level3\n");
@@ -283,7 +283,7 @@ void processInput(GLFWwindow *window, bool collide)
   glfwSetKeyCallback(window, moveBlock);
   if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
   {
-    Scenery::View = glm::lookAt(glm::vec3(0, 25, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
   }
   if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
