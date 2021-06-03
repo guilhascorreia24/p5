@@ -15,7 +15,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window, bool collide);
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
 void reposition(glm::vec3 v, Scenery *l);
-void atributes(glm::mat4 g, unsigned int VBO);
+void atributes(Object b, unsigned int VBO);
 // settings
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
@@ -42,7 +42,7 @@ const char *vertexShaderSource = "#version 330 core\n"
                                  "uniform mat4 Model;\n"
                                  "void main()\n"
                                  "{\n"
-                                 "   gl_Position = MVP * vec4(aPos, 1.0);\n"
+                                 "   gl_Position = MVP*Model * vec4(aPos, 1.0);\n"
                                  "   fragmentColor = vertexColor;\n"
                                  "    TexCoord = aTexCoord;\n"
                                  "   Normal = mat3(transpose(inverse(Model))) * aNormal;\n"
@@ -265,8 +265,8 @@ int main()
   //atual_level.addObj(block);
   //timerun=glfwGetTime();
 
-      MatrixID = glGetUniformLocation(shaderProgram, "MVP");
-  glUseProgram(shaderProgram);
+  MatrixID = glGetUniformLocation(shaderProgram, "MVP");
+
   while (!glfwWindowShouldClose(window))
   {
     processInput(window, colide);
@@ -275,17 +275,20 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //atual_level.block.Model = atual_level.block.Model * glm::rotate(glm::mat4(1), glm::radians(1.0f), glm::vec3(1, 1, 0));
+    glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
     //printf("plat\n");
-    atributes(atual_level.plat.MVP, VBO[1 + level]);
+    atributes(atual_level.plat, VBO[1 + level]);
+
     atual_level.plat.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.plat.n_vertexes);
     //printf("floor\n");
-    atributes(atual_level.floor.MVP, VBO[2 + level]);
+    atributes(atual_level.floor, VBO[2 + level]);
     atual_level.floor.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.floor.n_vertexes);
     //printf("block\n");
-    atributes(atual_level.block.MVP, VBO[0 + level]);
+    atributes(atual_level.block, VBO[0 + level]);
     atual_level.block.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.block.n_vertexes);
 
@@ -330,16 +333,19 @@ void processInput(GLFWwindow *window, bool collide)
   glfwSetKeyCallback(window, moveBlock);
   if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
   {
+    Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
   }
   if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
   {
+    Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
   }
-  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && level!=0)
+  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && level != 0)
   {
+    Model = glm::mat4(1);
     atual_level = level1;
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
@@ -347,8 +353,9 @@ void processInput(GLFWwindow *window, bool collide)
     glfwSetTime(0);
     level = 0;
   }
-  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && level!=3)
+  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && level != 3)
   {
+    Model = glm::mat4(1);
     atual_level = level2;
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
@@ -356,8 +363,9 @@ void processInput(GLFWwindow *window, bool collide)
     glfwSetTime(0);
     level = 3;
   }
-  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && level!=6)
+  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && level != 6)
   {
+    Model = glm::mat4(1);
     atual_level = level3;
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
@@ -380,6 +388,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   }
   if (key == GLFW_KEY_R && action == GLFW_PRESS)
   {
+    Model = glm::mat4(1);
     atual_level.block.MVP = Scenery::Projection * Scenery::View;
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
@@ -391,7 +400,7 @@ void reposition(glm::vec3 v, Scenery *l)
   Block t = Block();
   l->block.inicial_pos[1] = 0;
   l->block.atual = l->block.inicial_pos;
-  l->block.MVP = l->MVP * glm::translate(glm::mat4(1), l->block.inicial_pos);
+  l->block.Model = l->block.Model * glm::translate(glm::mat4(1), l->block.inicial_pos);
   for (Block o : l->plat.blocks)
   {
     if (o.distanceObjects(&l->block) < dist)
@@ -406,16 +415,16 @@ void reposition(glm::vec3 v, Scenery *l)
   l->block.reset();
 }
 
-void atributes(glm::mat4 g, unsigned int VBO)
+void atributes(Object g, unsigned int VBO)
 {
-  glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &g[0][0]);
+  glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &g.MVP[0][0]);
 
-  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Model"), 1, GL_FALSE, &Model[0][0]);
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Model"), 1, GL_FALSE, &g.Model[0][0]);
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.ambient"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.specular"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
   glUniform1f(glGetUniformLocation(shaderProgram, "material.shininess"), 32.0f);
-  glUniform3fv(glGetUniformLocation(shaderProgram, "light.ambient"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "light.ambient"), 1, glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.diffuse"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.position"), 1, glm::value_ptr(lightPos));
