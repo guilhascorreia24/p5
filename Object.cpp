@@ -274,6 +274,7 @@ bool Object::Collide(Object o)
 void Object::standUP()
 {
     MVP = Scenery::Projection * Scenery::View * glm::translate(glm::mat4(1), atual);
+    Model=glm::mat4(1);
     height = max.y - min.y;
     width = max.z - min.z;
     length = max.x - min.x;

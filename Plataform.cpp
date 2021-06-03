@@ -19,6 +19,7 @@ Plataform::Plataform(const char *c, const char *t)
     this->setVertexes(c, v, f);
     this->setTexture(t);
     setBlocks();
+    Model=glm::mat4(1);
 }
 
 void Plataform::setBlocks()

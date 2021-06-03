@@ -9,7 +9,7 @@
 #include "Block.h"
 #include "Scenery.h"
 using namespace std;
-Block::Block(const char *c,const char *t)
+Block::Block(const char *c, const char *t)
 {
     struct Vertex *v = (struct Vertex *)malloc(100000 * sizeof(struct Vertex));
     struct Faces *f = (struct Faces *)malloc(100000 * sizeof(struct Faces));
@@ -20,12 +20,14 @@ Block::Block(const char *c,const char *t)
     width = max.z - min.z;
     rotate_vertical = glm::vec3(1, 0, 0);
     rotate_lateral = glm::vec3(0, 0, 1);
+    Model=glm::mat4(1);
 }
 void Block::reset()
 {
     inicial_pos[1] = 5;
     atual = inicial_pos;
-    MVP = MVP * glm::translate(glm::mat4(1), atual);
+    //Model=glm::mat4(1);
+    Model = Model * glm::translate(glm::mat4(1), atual);
     rotations = glm::vec3(0, 0, 0);
     rotate_vertical = glm::vec3(1, 0, 0);
     rotate_lateral = glm::vec3(0, 0, 1);
@@ -41,18 +43,20 @@ void Block::Falling(float t_now)
     //cout<<rotate_lateral<< rotate_vertical<<std::endl;
     //cout<<rotations<<std::endl;
     f = glm::translate(glm::mat4(1), glm::vec3(0, this->vel * dt, 0));
-    MVP = MVP * f;
+    Model = Model * f;
     if (rotate_vertical == glm::vec3(0, 1, 0))
     {
-        MVP = MVP * glm::rotate(glm::mat4(1), glm::radians(rotations[2]), glm::vec3(0, 0, 1));
+        Model = Model * glm::rotate(glm::mat4(1), glm::radians(rotations[2]), glm::vec3(0, 0, 1));
     }
     else if (rotate_lateral == glm::vec3(0, 1, 0))
     {
-        MVP = MVP * glm::rotate(glm::mat4(1), glm::radians(rotations[0]), glm::vec3(1, 0, 0));
+        Model = Model * glm::rotate(glm::mat4(1), glm::radians(rotations[0]), glm::vec3(1, 0, 0));
     }
     atual = glm::vec3(atual[0], atual[1] + this->vel * dt, atual[2]);
     standUP();
 }
+
+
 void Block::Moves(int key)
 {
     float ver;
@@ -210,11 +214,8 @@ void Block::Moves(int key)
     //cout << rotate_vertical << std::endl;
     //cout << rotate_lateral << std::endl;
     //cout<<tostring()<<std::endl;
-    glm::mat4 u = MVP * f * r;
-    Model=r;
-    MVP = u;
+    Model = Model * f * r;
 }
-
 Block::Block(struct Vertex c, struct Vertex min, struct Vertex max)
 {
     this->max = max;

@@ -261,6 +261,7 @@ int main()
   reposition(level3.block.inicial_pos, &level3);
 
   atual_level = level1;
+  cout<<atual_level.block.tostring()<<std::endl;
 
   //atual_level.addObj(block);
   //timerun=glfwGetTime();
@@ -331,21 +332,9 @@ void processInput(GLFWwindow *window, bool collide)
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   glfwSetKeyCallback(window, moveBlock);
-  if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-  {
-    Model = glm::mat4(1);
-    Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
-  }
-  if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-  {
-    Model = glm::mat4(1);
-    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
-  }
   if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && level != 0)
   {
-    Model = glm::mat4(1);
+    //Model = glm::mat4(1);
     atual_level = level1;
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
@@ -393,6 +382,19 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
   }
+  if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+  {
+    Model = glm::mat4(1);
+    Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    cout << atual_level.block.tostring() << std::endl;
+  }
+  if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+  {
+    //Model = glm::mat4(1);
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+  }
 }
 void reposition(glm::vec3 v, Scenery *l)
 {
@@ -420,10 +422,10 @@ void atributes(Object g, unsigned int VBO)
   glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &g.MVP[0][0]);
 
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Model"), 1, GL_FALSE, &g.Model[0][0]);
-  glUniform3fv(glGetUniformLocation(shaderProgram, "material.ambient"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "material.ambient"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.specular"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-  glUniform1f(glGetUniformLocation(shaderProgram, "material.shininess"), 32.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "material.shininess"), 50.0f);
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.ambient"), 1, glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.diffuse"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));

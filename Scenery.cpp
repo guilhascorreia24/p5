@@ -47,11 +47,12 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
     block = b;
     plat = p;
     floor = f;
-    //cout << block.atual << std::endl;
-    block.MVP = MVP * glm::translate(glm::mat4(1), block.atual);
-    block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
-    //block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[1]), glm::vec3(0, 1, 0));
-    block.MVP = block.MVP * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
+    block.MVP=MVP;
+    block.Model=glm::mat4(1);
+    block.Model = block.Model * glm::translate(glm::mat4(1), block.atual);
+    block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
+    block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
+
     plat.MVP = MVP * glm::translate(glm::mat4(1), plat.atual);
     //cout<<floor.atual<<std::endl;
     this->floor.atual[1] = -8;
