@@ -13,20 +13,20 @@ using namespace std;
 #include <glm/gtx/io.hpp>
 #include <vector>
 #include "Object.h"
+#include "Body.h"
+#include "Plataform.h"
 class Sheep : public Object
 {
-    float time = 0, vel = 0;
 
 public:
-    glm::vec3 rotations;
-    glm::vec3 rotate_vertical,rotate_lateral;
-    Sheep(const char *f,const char *t);
-    Sheep(){};
-    Sheep(struct Vertex c,struct Vertex min,struct Vertex max);
-    void Moving(float t);
-
-    private:
-        glm::mat4 Translations(int key,float move,glm::vec3 r);
+    Body body,head_mems;
+    glm::vec3 last_limit_floor;
+    Sheep(const char *head_c,const char *head_t,const char *body_c,const char *body_t);
+    Sheep(){}
+    void Moves_Random(Plataform c);
+    void Moves_to_block();
+    glm::mat4 Translate(glm::vec3 g);
+    glm::mat4 Rotation(float radius,glm::vec3 r);
 
 };
 #endif

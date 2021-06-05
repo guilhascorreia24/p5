@@ -9,60 +9,35 @@
 #include "Sheep.h"
 #include "Scenery.h"
 using namespace std;
-Sheep::Sheep(const char *c, const char *t)
+Sheep::Sheep(const char *head_c, const char *head_t, const char *body_c, const char *body_t)
 {
-    struct Vertex *v = (struct Vertex *)malloc(100000 * sizeof(struct Vertex));
-    struct Faces *f = (struct Faces *)malloc(100000 * sizeof(struct Faces));
-    this->setVertexes(c, v, f);
-    this->setTexture(t);
-    length = max.x - min.x;
-    height = max.y - min.y;
-    width = max.z - min.z;
-    rotate_vertical = glm::vec3(1, 0, 0);
-    rotate_lateral = glm::vec3(0, 0, 1);
-    Model=glm::mat4(1);
+    this->body = Body(body_c, body_t);
+    this->head_mems = Body(head_c, head_t);
+    body.MVP = Scenery::Projection * Scenery::View;
+    head_mems.MVP = Scenery::Projection * Scenery::View;
+    MVP = Scenery::Projection * Scenery::View;
+    last_limit_floor = glm::vec3(0, 0, 0);
+}
+void Sheep::Moves_Random(Plataform p)
+{
+
+    Model = Translate(glm::vec3(glfwGetTime(), 0, glfwGetTime()));
 }
 
-void Sheep::Moving(float t_now)
+void Sheep::Moves_to_block()
 {
-    float dt = t_now - this->time;
-    float acc = -0.001;
-    this->vel += acc * dt;
-    standUP();
-    glm::mat4 f;
-    //cout<<rotate_lateral<< rotate_vertical<<std::endl;
-    //cout<<rotations<<std::endl;
-    f = glm::translate(glm::mat4(1), glm::vec3(0, this->vel * dt, 0));
-    Model = Model * f;
-    if (rotate_vertical == glm::vec3(0, 1, 0))
-    {
-        Model = Model * glm::rotate(glm::mat4(1), glm::radians(rotations[2]), glm::vec3(0, 0, 1));
-    }
-    else if (rotate_lateral == glm::vec3(0, 1, 0))
-    {
-        Model = Model * glm::rotate(glm::mat4(1), glm::radians(rotations[0]), glm::vec3(1, 0, 0));
-    }
-    atual = glm::vec3(atual[0], atual[1] + this->vel * dt, atual[2]);
-    standUP();
 }
 
-
-Sheep::Sheep(struct Vertex c, struct Vertex min, struct Vertex max)
+glm::mat4 Sheep::Translate(glm::vec3 t)
 {
-    this->max = max;
-    this->min = min;
-    height = max.y - min.y;
-    width = max.z - min.z;
-    length = max.x - min.x;
-    Object b = Object();
-    MVP = b.MVP;
-    int r = 1000000;
-    inicial_pos = glm::vec3(c.x, c.y, c.z);
-    atual = inicial_pos;
-    atual[0] = round(atual[0] * r) / r;
-    atual[2] = round(atual[2] * r) / r;
-    atual[1] = round(atual[1] * r) / r;
-    MVP = MVP * glm::translate(glm::mat4(1), inicial_pos);
-    rotate_vertical = glm::vec3(0, 1, 0);
-    rotate_lateral = glm::vec3(0, 0, 1);
+    this->body.Model = body.Model * glm::translate(glm::mat4(1), t);
+    this->head_mems.Model = head_mems.Model * glm::translate(glm::mat4(1), t);
+    return Model * glm::translate(glm::mat4(1), t);
+}
+
+glm::mat4 Sheep::Rotation(float t, glm::vec3 r)
+{
+    this->body.Model = body.Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
+    this->head_mems.Model = head_mems.Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
+    return Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
 }

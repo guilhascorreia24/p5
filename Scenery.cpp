@@ -70,13 +70,8 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
     for(int i=0;i<plat.lavaBlocks.size();i++){
         plat.lavaBlocks.at(i).MVP=MVP*glm::translate(glm::mat4(1),plat.lavaBlocks.at(i).inicial_pos);
     }
-<<<<<<< HEAD
     cinzas.MVP=Projection*View;
     //block.burn=false;
-=======
-    sheep.MVP = MVP;
-    sheep.Model = glm::translate(glm::mat4(1), sheep.inicial_pos);
->>>>>>> 746af66c29ed529f81cca6f4dcce8c6b0a3d10da
     //addPlataform(floor);
 };
 

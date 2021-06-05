@@ -190,40 +190,40 @@ int main()
   glDeleteShader(fragmentShader);
   // delete shaders, we don't need them anymore
   Block block1 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
-  printf("level1\n");
+  //printf("level1\n");
   Plataform plat1 = Plataform("../../p5/objs/level1.obj", "../../p5/textures/vidro.png");
   Plataform floor1 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
 
   Block block2 = Block("../../p5/objs/wood.obj", "../../p5/textures/wood.png");
-  printf("level2\n");
+  //printf("level2\n");
   Plataform plat2 = Plataform("../../p5/objs/level2.obj", "../../p5/textures/relva.png");
   Plataform floor2 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/terra.png");
   lava = Block("../../p5/objs/lavaBlock.obj", "../../p5/textures/lava.png");
   plat2.setLavaBlocks(lava);
   Cinzas cinzas = Cinzas("../../p5/objs/cinzas.obj", "../../p5/textures/cinzas.png");
-  printf("lava\n");
+  //printf("lava\n");
 
   Block block3 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
-  printf("level3\n");
+  //printf("level3\n");
   Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
   Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
-  Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/la_ovelha.jpg");
+  Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/pernas.png", "../../p5/objs/corpo.obj", "../../p5/textures/la_ovelha.jpg");
 
   //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
-  printf("s1\n");
+  //printf("s1\n");
   level1 = Scenery(Scenery::Projection * Scenery::View * Model, block1, plat1, floor1);
-  printf("s2\n");
+  //printf("s2\n");
   level2 = Scenery(Scenery::Projection * Scenery::View * Model, block2, plat2, floor2);
   level2.setCinzas(cinzas);
-  printf("s3\n");
+  //printf("s3\n");
   level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3, sheep);
   //level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3);
   //------------------------------------------------------------
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
-  //printf("oi\n");
-  unsigned int VBO[11 + level2.plat.lavaBlocks.size()];
+  ////printf("oi\n");
+  unsigned int VBO[12 + level2.plat.lavaBlocks.size()];
   glGenBuffers(1, &VBO[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
@@ -258,7 +258,7 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.cinzas.n_vertexes, level2.cinzas.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-
+  cout<<level2.plat.lavaBlocks.size()<<std::endl;
   for (int i = 7; i < 7 + level2.plat.lavaBlocks.size(); i++)
   {
     glGenBuffers(1, &VBO[i]);
@@ -282,11 +282,17 @@ int main()
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.floor.n_vertexes, level3.floor.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
 
-  /*glGenBuffers(1, &VBO[7 + level2.plat.lavaBlocks.size() + 3]);
+  glGenBuffers(1, &VBO[7 + level2.plat.lavaBlocks.size() + 3]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[7 + level2.plat.lavaBlocks.size() + 3]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.sheep.n_vertexes, level3.sheep.vertex, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);*/
-  //printf("uuuu\n");
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.sheep.body.n_vertexes, level3.sheep.body.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &VBO[7 + level2.plat.lavaBlocks.size() + 4]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[7 + level2.plat.lavaBlocks.size() + 4]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.sheep.head_mems.n_vertexes, level3.sheep.head_mems.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  ////printf("uuuu\n");
+  cout<<sizeof(VBO)<<std::endl;
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level1.block.inicial_pos, &level1);
@@ -294,8 +300,9 @@ int main()
   reposition(level2.block.inicial_pos, &level2);
   level3.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level3.block.inicial_pos, &level3);
-  level3.sheep.inicial_pos = glm::vec3(0, -8, 0);
-  level3.sheep.Model = glm::translate(glm::mat4(1), level3.sheep.inicial_pos);
+  level3.sheep.inicial_pos = glm::vec3(0, -6, 0);
+  level3.sheep.Model = level3.sheep.Translate(level3.sheep.inicial_pos);
+  level3.sheep.Model = level3.sheep.Rotation(90,glm::vec3(0,1,0));
 
   atual_level = level1;
   //cout << atual_level.block.tostring() << std::endl;
@@ -317,16 +324,20 @@ int main()
     //atual_level.block.Model = atual_level.block.Model * glm::rotate(glm::mat4(1), glm::radians(1.0f), glm::vec3(1, 1, 0));
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    //printf("plat\n");
+    
+    //plataforma
     atributes(atual_level.plat, VBO[1 + level]);
     atual_level.plat.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.plat.n_vertexes);
-    //printf("floor\n");
+    
+    //chao
     atributes(atual_level.floor, VBO[2 + level]);
     atual_level.floor.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.floor.n_vertexes);
-    //printf("block\n");
-    if (atual_level.block.burn && level==3)
+    
+
+    //block or cinzas 
+    if (atual_level.block.burn && level == 3)
     {
       atributes(atual_level.cinzas, VBO[3 + level]);
       atual_level.cinzas.loadTextures();
@@ -340,10 +351,27 @@ int main()
     }
 
     //sheep
-    atributes(level3.sheep, VBO[7 + level2.plat.lavaBlocks.size() + 3]);
-    level3.sheep.loadTextures();
-    glDrawArrays(GL_TRIANGLES, 0, level3.sheep.n_vertexes);
+    if (level == 14)
+    {
+      //printf("sheep ini draw\n");
+      atributes(atual_level.sheep.body, VBO[level+3]);
+      //printf("finish atributes\n");
+      atual_level.sheep.body.loadTextures();
+      //printf("finish loadtext1\n");
+      glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.body.n_vertexes);
+      //printf("head:sheep\n");
+      atributes(atual_level.sheep.head_mems, VBO[level+ 4]);
+      //printf("finish atributes\n");
+      atual_level.sheep.head_mems.loadTextures();
+      //printf("finish loadtext2\n");
+      glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.head_mems.n_vertexes);
+      //printf("sheep\n");
 
+      atual_level.sheep.Moves_Random(atual_level.plat);
+    }
+
+
+    //blocks lava
     if (atual_level.plat.lavaBlocks.size() != 0)
     {
       for (int i = 0; i < atual_level.plat.lavaBlocks.size(); i++)
@@ -354,10 +382,10 @@ int main()
       }
     }
 
-    //cout<<atual_level.block.atual<<std::endl;
+    //queda do block
     if (!colide && !atual_level.block.Collisions(atual_level.objs))
     {
-      //printf("oi\n");
+      ////printf("oi\n");
       atual_level.block.Falling(glfwGetTime());
     }
     else
@@ -365,13 +393,15 @@ int main()
       glfwSetTime(0);
     }
     colide = atual_level.BlockOverEdgesPrataform();
+    
+    //block fica deitado caso caia no chao
     if (atual_level.block.Collide(atual_level.floor))
     {
       atual_level.block.standUP();
       atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
     }
-    //cout << level.MVP << std::endl;
-    //cout << block.MVP << std::endl;
+
+
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
@@ -421,7 +451,8 @@ void processInput(GLFWwindow *window, bool collide)
     Model = glm::mat4(1);
     atual_level = level3;
     Scenery::View = glm::lookAt(glm::vec3(5, 15, 20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    atual_level = Scenery(Scenery::Projection * Scenery::View, level3.block, level3.plat, level3.floor,level3.sheep);
+    //printf("level3\n");
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
     mx = 10.0f;
@@ -445,7 +476,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     Model = glm::mat4(1);
     mx = 10.0f;
     atual_level.block.MVP = Scenery::Projection * Scenery::View;
-    atual_level.block.burn=false;
+    atual_level.block.burn = false;
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
   }
@@ -453,7 +484,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   {
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    Cinzas c=atual_level.cinzas;
+    Cinzas c = atual_level.cinzas;
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     atual_level.setCinzas(c);
     //cout << atual_level.block.tostring() << std::endl;
@@ -463,7 +494,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
   {
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    Cinzas c=atual_level.cinzas;
+    Cinzas c = atual_level.cinzas;
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     atual_level.setCinzas(c);
   }
@@ -493,7 +524,7 @@ void reposition(glm::vec3 v, Scenery *l)
 void atributes(Object g, unsigned int VBO)
 {
   glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &g.MVP[0][0]);
-
+  ////printf("going do Model\n");
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Model"), 1, GL_FALSE, &g.Model[0][0]);
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.ambient"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
@@ -504,6 +535,7 @@ void atributes(Object g, unsigned int VBO)
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "light.position"), 1, glm::value_ptr(lightPos));
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  ////printf("after light and model\n");
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)0);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(3 * sizeof(float)));
@@ -513,6 +545,7 @@ void atributes(Object g, unsigned int VBO)
   // normal attribute
   glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(8 * sizeof(float)));
   glEnableVertexAttribArray(3);
+ // //printf("finish atributes\n");
 }
 
 void moveLights()
