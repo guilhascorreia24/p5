@@ -27,7 +27,7 @@ void Block::reset()
     inicial_pos[1] = 5;
     atual = inicial_pos;
     //Model=glm::mat4(1);
-    Model = Model * glm::translate(glm::mat4(1), atual);
+    Model = glm::translate(glm::mat4(1), atual);
     rotations = glm::vec3(0, 0, 0);
     rotate_vertical = glm::vec3(1, 0, 0);
     rotate_lateral = glm::vec3(0, 0, 1);

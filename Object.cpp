@@ -219,12 +219,13 @@ bool Object::Collisions(std::vector<Object> objs)
     {
         if (atual[0] - o.min.x > pow(10, -6) && atual[0] - o.max.x < -pow(10, -6) && atual[2] - o.min.z > pow(10, -6) && atual[2] - o.max.z < -pow(10, -6))
         {
-            if ((abs(atual[1] - o.atual[1]) < (o.height / 2) + (height / 2)))
+            if ((abs(atual[1] - o.atual[1])-0.01 < (o.height / 2) + (height / 2)))
             {
                 /*cout<<o.min.x<<";"<<o.min.z<<" "<<o.max.x<<";"<<o.max.z<<std::endl;
                 cout<<tostring()<<std::endl;
                 cout<<atual[0]-o.max.x<<std::endl;
                 printf("colide up\n");*/
+                //Model=Model*glm::translate(glm::mat4(1),glm::vec3(0,atual[1] - o.atual[1],0));
                 return true;
             }
             if (atual[1] > o.min.y && atual[1] < o.max.y)

@@ -20,10 +20,13 @@ class Plataform : public Object
 
 public:
     std::vector<Block> blocks;
+    std::vector<Block> lavaBlocks;
     Block final_;
     Plataform(const char *f,const char *t);
     Plataform(){};
     bool overBlock(Block b);
+    bool overLavaBlocks(Block b);
+    void setLavaBlocks(Block b);
 
 private:
     double distanceOther(glm::mat4 t);

@@ -27,6 +27,7 @@ Scenery atual_level, level1, level2, level3;
 bool colide_floor = false;
 bool colide = false;
 int level = 0;
+Block lava;
 glm::mat4 Model = glm::mat4(1.0f);
 glm::vec3 lightPos(10.0f, 5.0f, 5.0f);
 const char *vertexShaderSource = "#version 330 core\n"
@@ -192,6 +193,9 @@ int main()
   printf("level2\n");
   Plataform plat2 = Plataform("../../p5/objs/level2.obj", "../../p5/textures/relva.png");
   Plataform floor2 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/terra.png");
+  lava = Block("../../p5/objs/lavaBlock.obj", "../../p5/textures/lava.png");
+  plat2.setLavaBlocks(lava);
+  printf("lava\n");
 
   Block block3 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
   printf("level3\n");
@@ -199,15 +203,18 @@ int main()
   Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
 
   //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
+  printf("s1\n");
   level1 = Scenery(Scenery::Projection * Scenery::View * Model, block1, plat1, floor1);
+  printf("s2\n");
   level2 = Scenery(Scenery::Projection * Scenery::View * Model, block2, plat2, floor2);
+  printf("s3\n");
   level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3);
   //------------------------------------------------------------
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
-  printf("oi\n");
-  unsigned int VBO[9];
+  //printf("oi\n");
+  unsigned int VBO[9+level2.plat.lavaBlocks.size()];
   glGenBuffers(1, &VBO[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
@@ -238,20 +245,33 @@ int main()
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.floor.n_vertexes, level2.floor.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
 
-  glGenBuffers(1, &VBO[6]);
+  /*glGenBuffers(1, &VBO[6]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * lava.n_vertexes, lava.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);*/
+  for (int i = 6; i < 6 + level2.plat.lavaBlocks.size(); i++)
+  {
+    glGenBuffers(1, &VBO[i]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.plat.lavaBlocks.at(i-6).n_vertexes, level2.plat.lavaBlocks.at(i - 6).vertex, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+  }
+
+  glGenBuffers(1, &VBO[13]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[13]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.block.n_vertexes, level3.block.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
 
-  glGenBuffers(1, &VBO[7]);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
+  glGenBuffers(1, &VBO[14]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[14]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.plat.n_vertexes, level3.plat.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
 
-  glGenBuffers(1, &VBO[8]);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
+  glGenBuffers(1, &VBO[15]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[15]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.floor.n_vertexes, level3.floor.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
+  //printf("uuuu\n");
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level1.block.inicial_pos, &level1);
@@ -261,7 +281,7 @@ int main()
   reposition(level3.block.inicial_pos, &level3);
 
   atual_level = level1;
-  cout<<atual_level.block.tostring()<<std::endl;
+  //cout << atual_level.block.tostring() << std::endl;
 
   //atual_level.addObj(block);
   //timerun=glfwGetTime();
@@ -281,7 +301,6 @@ int main()
     glBindVertexArray(VAO);
     //printf("plat\n");
     atributes(atual_level.plat, VBO[1 + level]);
-
     atual_level.plat.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.plat.n_vertexes);
     //printf("floor\n");
@@ -292,6 +311,18 @@ int main()
     atributes(atual_level.block, VBO[0 + level]);
     atual_level.block.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.block.n_vertexes);
+    if (atual_level.plat.lavaBlocks.size() != 0)
+    {
+              /*atributes(lava, VBO[3+ level]);
+        lava.loadTextures();
+        glDrawArrays(GL_TRIANGLES, 0,lava.n_vertexes);*/
+      for (int i = 0; i < atual_level.plat.lavaBlocks.size(); i++)
+      {
+        atributes(atual_level.plat.lavaBlocks.at(i), VBO[3+i + level]);
+        atual_level.plat.lavaBlocks.at(i).loadTextures();
+        glDrawArrays(GL_TRIANGLES, 0, atual_level.plat.lavaBlocks.at(i).n_vertexes);
+      }
+    }
 
     //cout<<atual_level.block.atual<<std::endl;
     if (!colide && !atual_level.block.Collisions(atual_level.objs))
@@ -316,7 +347,7 @@ int main()
   }
 
   glDeleteVertexArrays(1, &VAO);
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 16; i++)
   {
 
     glDeleteBuffers(1, &VBO[i]);
@@ -360,7 +391,7 @@ void processInput(GLFWwindow *window, bool collide)
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
-    level = 6;
+    level = 13;
   }
 }
 
@@ -387,6 +418,9 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    if(atual_level.plat.lavaBlocks.size()!=0){
+      lava.MVP=Scenery::Projection * Scenery::View;
+    }
     cout << atual_level.block.tostring() << std::endl;
   }
   if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
