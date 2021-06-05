@@ -34,8 +34,6 @@ public:
     Scenery() {}
     Cinzas cinzas;
 
-    Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor);
-    Scenery() {};
     void addObj(Object b);
     void addPlataform(Plataform b);
     void addBlock(Block b);

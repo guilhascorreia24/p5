@@ -96,7 +96,6 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f, Sheep s)
     }
     //addPlataform(floor);
 };
-}
 bool Scenery::BlockOverEdgesPrataform()
 {
     Block o;

@@ -208,7 +208,7 @@ int main()
   printf("level3\n");
   Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
   Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
-  Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/preto.jpg");
+  //Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/la_ovelha.jpg");
 
   //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
   printf("s1\n");
@@ -217,13 +217,14 @@ int main()
   level2 = Scenery(Scenery::Projection * Scenery::View * Model, block2, plat2, floor2);
   //level2.setCinzas(cinzas);
   printf("s3\n");
-  level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3,sheep);
+  //level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3,sheep);
+  level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3);
   //------------------------------------------------------------
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
   //printf("oi\n");
-  unsigned int VBO[10 + level2.plat.lavaBlocks.size()];
+  unsigned int VBO[11 + level2.plat.lavaBlocks.size()];
   glGenBuffers(1, &VBO[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
@@ -280,6 +281,11 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, VBO[7 + level2.plat.lavaBlocks.size() + 2]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.floor.n_vertexes, level3.floor.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
+
+ /* glGenBuffers(1, &VBO[7 + level2.plat.lavaBlocks.size() + 3]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[7 + level2.plat.lavaBlocks.size() + 3]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.sheep.n_vertexes, level3.sheep.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);*/
   //printf("uuuu\n");
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
@@ -288,6 +294,8 @@ int main()
   reposition(level2.block.inicial_pos, &level2);
   level3.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level3.block.inicial_pos, &level3);
+  level3.sheep.inicial_pos = glm::vec3(-4.85,2,0);
+  //level3.sheep.Model = Model* glm::translate(glm::mat4(1), level3.sheep.inicial_pos);
 
   atual_level = level1;
   //cout << atual_level.block.tostring() << std::endl;
@@ -321,6 +329,12 @@ int main()
     atributes(atual_level.block, VBO[0 + level]);
     atual_level.block.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.block.n_vertexes);
+    
+    //sheep
+    /*atributes(atual_level.sheep, VBO[7 + level2.plat.lavaBlocks.size() + 3]);
+    atual_level.sheep.loadTextures();
+    glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.n_vertexes);*/
+
     if (atual_level.plat.lavaBlocks.size() != 0)
     {
       atributes(cinzas, VBO[3 + level]);
@@ -406,7 +420,7 @@ void processInput(GLFWwindow *window, bool collide)
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
     mx=10.0f;
-    level = 13;
+    level = 14;
   }
 }
 
