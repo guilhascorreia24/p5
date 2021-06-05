@@ -15,6 +15,7 @@ using namespace std;
 #include "Object.h"
 #include "Plataform.h"
 #include "Block.h"
+#include "Cinzas.h"
 //glm::mat4 Projection,View;
 class Scenery
 {
@@ -26,12 +27,15 @@ public:
     Plataform floor;
     Plataform sky;
     Block block;
+    Cinzas cinzas;
+
     Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor);
-    Scenery() {}
+    Scenery() {};
     void addObj(Object b);
     void addPlataform(Plataform b);
     void addBlock(Block b);
     bool BlockOverEdgesPrataform();
+    void setCinzas(Cinzas c);
 
     static glm::mat4 Projection;
     static glm::mat4 View;
@@ -39,5 +43,6 @@ public:
 private:
     bool OverPlatformlying_down(glm::vec3 b);
     bool OntheBorders(glm::vec3 a,glm::vec3 b,glm::vec3 move);
+    bool onLavaBlock(glm::vec3 b);
 };
 #endif

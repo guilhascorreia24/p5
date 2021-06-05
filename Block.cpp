@@ -170,7 +170,7 @@ void Block::Moves(int key)
         else if (rotate_lateral == glm::vec3(0, 1, 0))
         {
             r = glm::rotate(r, glm::radians(radius), rotate_vertical);
-            r = glm::rotate(r, glm::radians(-radius), rotate_lateral);
+            r = glm::rotate(r, glm::radians(radius), rotate_lateral);
         }
         rotations += rotate_lateral * (-radius);
     }
