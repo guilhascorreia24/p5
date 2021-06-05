@@ -6,7 +6,6 @@
 #include <glm/gtx/io.hpp>
 #include "Object.h"
 #include "Plataform.h"
-#include "Scenery.h"
 #include <vector>
 #include <set>
 #include <algorithm>

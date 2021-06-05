@@ -6,6 +6,7 @@
 #include "Object.h"
 #include "Block.h"
 #include "Plataform.h"
+#include "Cinzas.h"
 #include "Scenery.h"
 #include "Sheep.h"
 #include <stdlib.h>
@@ -95,6 +96,7 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f, Sheep s)
     }
     //addPlataform(floor);
 };
+}
 bool Scenery::BlockOverEdgesPrataform()
 {
     Block o;
@@ -116,7 +118,7 @@ bool Scenery::BlockOverEdgesPrataform()
     if (block.Collisions(obj))
     {
         if (block.rotate_lateral == glm::vec3(0, 1, 0))
-        {
+        {   
             return OntheBorders(frente, tras, glm::vec3(0, 0, block.height / 4));
         }
         else if (block.rotate_vertical == glm::vec3(0, 1, 0))
@@ -171,6 +173,16 @@ bool Scenery::OntheBorders(glm::vec3 a, glm::vec3 b, glm::vec3 move)
     {
         block.atual += move;
         return false;
+    }
+    return false;
+}
+
+bool Scenery::onLavaBlock(glm::vec3 t){
+    for(Block b:plat.lavaBlocks){
+        if (t[0] > b.min.x && t[0] < b.max.x && t[2] > b.min.z && t[2] < b.max.z)
+        {
+            return true;
+        }
     }
     return false;
 }
