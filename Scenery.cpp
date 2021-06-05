@@ -7,6 +7,7 @@
 #include "Block.h"
 #include "Plataform.h"
 #include "Scenery.h"
+#include "Sheep.h"
 #include <stdlib.h>
 #include <vector>
 #include <set>
@@ -41,12 +42,42 @@ void Scenery::addBlock(Block b)
     block = b;
     //objs.push_back(b);
 }
+
+void Scenery::addSheep(Sheep b)
+{
+    sheep = b;
+}
 Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
 {
     this->MVP = MVP;
     block = b;
     plat = p;
     floor = f;
+    block.MVP=MVP;
+    block.Model=glm::mat4(1);
+    block.Model = block.Model * glm::translate(glm::mat4(1), block.atual);
+    block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
+    block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
+
+    plat.MVP = MVP * glm::translate(glm::mat4(1), plat.atual);
+    this->floor.atual[1] = -8;
+    this->floor.MVP = MVP * glm::translate(glm::mat4(1), floor.atual);
+    addPlataform(plat);
+    objs.push_back(floor);
+    block.setWalk(plat.blocks.at(0).width);
+    for(int i=0;i<plat.lavaBlocks.size();i++){
+        plat.lavaBlocks.at(i).MVP=MVP*glm::translate(glm::mat4(1),plat.lavaBlocks.at(i).inicial_pos);
+    }
+    //addPlataform(floor);
+};
+
+Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f, Sheep s)
+{
+    this->MVP = MVP;
+    block = b;
+    plat = p;
+    floor = f;
+    sheep = s;
     block.MVP=MVP;
     block.Model=glm::mat4(1);
     block.Model = block.Model * glm::translate(glm::mat4(1), block.atual);

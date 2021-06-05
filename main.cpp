@@ -10,6 +10,7 @@
 #include "Plataform.h"
 #include "Scenery.h"
 #include "Objscomps.h"
+#include "Sheep.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window, bool collide);
@@ -192,6 +193,7 @@ int main()
   Plataform plat1 = Plataform("../../p5/objs/level1.obj", "../../p5/textures/vidro.png");
   Plataform floor1 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
 
+
   Block block2 = Block("../../p5/objs/wood.obj", "../../p5/textures/wood.png");
   printf("level2\n");
   Plataform plat2 = Plataform("../../p5/objs/level2.obj", "../../p5/textures/relva.png");
@@ -204,6 +206,7 @@ int main()
   printf("level3\n");
   Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
   Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+  Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/preto.jpg");
 
   //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
   printf("s1\n");
@@ -211,7 +214,7 @@ int main()
   printf("s2\n");
   level2 = Scenery(Scenery::Projection * Scenery::View * Model, block2, plat2, floor2);
   printf("s3\n");
-  level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3);
+  level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3,sheep);
   //------------------------------------------------------------
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
