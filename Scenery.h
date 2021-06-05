@@ -15,6 +15,7 @@ using namespace std;
 #include "Object.h"
 #include "Plataform.h"
 #include "Block.h"
+#include "Sheep.h"
 #include "Cinzas.h"
 //glm::mat4 Projection,View;
 class Scenery
@@ -27,13 +28,16 @@ public:
     Plataform floor;
     Plataform sky;
     Block block;
+    Sheep sheep;
+    Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor);
+    Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor, Sheep s);
+    Scenery() {}
     Cinzas cinzas;
 
-    Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor);
-    Scenery() {};
     void addObj(Object b);
     void addPlataform(Plataform b);
     void addBlock(Block b);
+    void addSheep(Sheep b);
     bool BlockOverEdgesPrataform();
     void setCinzas(Cinzas c);
 
