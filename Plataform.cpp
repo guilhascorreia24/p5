@@ -33,6 +33,12 @@ void Plataform::setLavaBlocks(Block b){
     for(int i=0;i<7;i++){
         this->lavaBlocks.push_back(b);
         this->lavaBlocks.at(i).atual=this->lavaBlocks.at(i).inicial_pos=t[i];
+        this->lavaBlocks.at(i).max.x+=t[i][0];
+        this->lavaBlocks.at(i).max.y+=t[i][1];
+        this->lavaBlocks.at(i).max.z+=t[i][2];
+        this->lavaBlocks.at(i).min.x+=t[i][0];
+        this->lavaBlocks.at(i).min.y+=t[i][1];
+        this->lavaBlocks.at(i).min.z+=t[i][2];
     }
 }
 

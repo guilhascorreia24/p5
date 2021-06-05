@@ -39,7 +39,11 @@ public:
     void addBlock(Block b);
     void addSheep(Sheep b);
     bool BlockOverEdgesPrataform();
-    void setCinzas(Cinzas c);
+    void setCinzas(Cinzas c){
+        this->cinzas=c;
+        this->cinzas.MVP=Projection*View;
+        //this->cinzas.Model=glm::mat4(1);
+    }
 
     static glm::mat4 Projection;
     static glm::mat4 View;
