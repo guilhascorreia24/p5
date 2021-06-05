@@ -16,6 +16,7 @@ void processInput(GLFWwindow *window, bool collide);
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
 void reposition(glm::vec3 v, Scenery *l);
 void atributes(Object b, unsigned int VBO);
+void moveLights();
 // settings
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
@@ -29,6 +30,8 @@ bool colide = false;
 int level = 0;
 Block lava;
 glm::mat4 Model = glm::mat4(1.0f);
+float mx = 10.0f;
+bool b = true;
 glm::vec3 lightPos(10.0f, 5.0f, 5.0f);
 const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
@@ -291,6 +294,7 @@ int main()
   while (!glfwWindowShouldClose(window))
   {
     processInput(window, colide);
+    moveLights();
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -432,6 +436,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
 }
 void reposition(glm::vec3 v, Scenery *l)
 {
+  
   double dist = INT_MAX;
   Block t = Block();
   l->block.inicial_pos[1] = 0;
@@ -474,4 +479,32 @@ void atributes(Object g, unsigned int VBO)
   // normal attribute
   glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(8 * sizeof(float)));
   glEnableVertexAttribArray(3);
+}
+
+
+void moveLights()
+{
+  std::cout<<"valor do mx: " << mx << std::endl;
+  if(mx == 10.0f)
+  {
+    std::cout<<"vOLA"<< std::endl;
+    b = true;
+  }
+  else if(mx == -10.0f)
+  {
+    std::cout<<"ADEUS"<< std::endl;
+    b = false;
+  }
+
+
+  if(b==true)
+  {
+    mx-=0.02;
+  }
+  else
+  {
+    mx+=0.02;
+  }
+  mx = roundf(mx * 100) / 100;
+  lightPos = glm::vec3((float)mx,5.0f,5.0f);
 }
