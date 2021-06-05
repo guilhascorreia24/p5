@@ -456,6 +456,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     }
     cout << atual_level.block.tostring() << std::endl;
   }
+
   if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
   {
     //Model = glm::mat4(1);
