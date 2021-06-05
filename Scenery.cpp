@@ -47,6 +47,7 @@ void Scenery::addBlock(Block b)
 void Scenery::addSheep(Sheep b)
 {
     sheep = b;
+    sheep.MVP=Projection*View;
 }
 Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
 {
