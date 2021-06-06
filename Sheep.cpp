@@ -26,13 +26,30 @@ void Sheep::Moves_Random(Plataform p)
 
 void Sheep::Moves_to_block(glm::vec3 t)
 {
+    cout<<t<<std::endl;
+    cout<<atual<<std::endl;
     float x = t[0] - this->atual[0];
     float z = t[2] - this->atual[2];
-    this->Model = Translate(t);
+    cout<<x<<std::endl;
+    cout<<z<<std::endl;
+    this->Model = Translate(glm::vec3(t[0] - atual[0], 0, t[2] - atual[2]));
+}
+
+void Sheep::Reset(){
+    body.MVP = Scenery::Projection * Scenery::View;
+    head_mems.MVP = Scenery::Projection * Scenery::View;
+    MVP = Scenery::Projection * Scenery::View;
+    Model = glm::mat4(1);
+    body.Model = glm::mat4(1);
+    atual = glm::vec3(0);
+    head_mems.Model = glm::mat4(1);
+    Model = Translate(inicial_pos);
+    Model = Rotation(-30,glm::vec3(0,1,0));
 }
 
 glm::mat4 Sheep::Translate(glm::vec3 t)
 {
+    atual+=t;
     this->body.Model = body.Model * glm::translate(glm::mat4(1), t);
     this->head_mems.Model = head_mems.Model * glm::translate(glm::mat4(1), t);
     return Model * glm::translate(glm::mat4(1), t);

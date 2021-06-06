@@ -25,6 +25,7 @@ public:
     Sheep(){}
     void Moves_Random(Plataform c);
     void Moves_to_block(glm::vec3 t);
+    void Reset();
     glm::mat4 Translate(glm::vec3 g);
     glm::mat4 Rotation(float radius,glm::vec3 r);
 
