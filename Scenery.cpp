@@ -47,7 +47,7 @@ void Scenery::addBlock(Block b)
 void Scenery::addSheep(Sheep b)
 {
     sheep = b;
-    sheep.MVP=Projection*View;
+    sheep.MVP = Projection * View;
 }
 Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
 {
@@ -55,8 +55,8 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
     block = b;
     plat = p;
     floor = f;
-    block.MVP=MVP;
-    block.Model=glm::mat4(1);
+    block.MVP = MVP;
+    block.Model = glm::mat4(1);
     block.Model = block.Model * glm::translate(glm::mat4(1), block.atual);
     block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
     block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
@@ -67,10 +67,11 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
     addPlataform(plat);
     objs.push_back(floor);
     block.setWalk(plat.blocks.at(0).width);
-    for(int i=0;i<plat.lavaBlocks.size();i++){
-        plat.lavaBlocks.at(i).MVP=MVP*glm::translate(glm::mat4(1),plat.lavaBlocks.at(i).inicial_pos);
+    for (int i = 0; i < plat.lavaBlocks.size(); i++)
+    {
+        plat.lavaBlocks.at(i).MVP = MVP * glm::translate(glm::mat4(1), plat.lavaBlocks.at(i).inicial_pos);
     }
-    cinzas.MVP=Projection*View;
+    cinzas.MVP = Projection * View;
     //block.burn=false;
     //addPlataform(floor);
 };
@@ -82,8 +83,11 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f, Sheep s)
     plat = p;
     floor = f;
     sheep = s;
-    block.MVP=MVP;
-    block.Model=glm::mat4(1);
+    sheep.setMVP(MVP);
+    sheep.setModel(sheep.Model);
+    //sheep.Model=sheep.Translate();
+    block.MVP = MVP;
+    block.Model = glm::mat4(1);
     block.Model = block.Model * glm::translate(glm::mat4(1), block.atual);
     block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[0]), glm::vec3(1, 0, 0));
     block.Model = block.Model * glm::rotate(glm::mat4(1), glm::radians(block.rotations[2]), glm::vec3(0, 0, 1));
@@ -94,8 +98,9 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f, Sheep s)
     addPlataform(plat);
     objs.push_back(floor);
     block.setWalk(plat.blocks.at(0).width);
-    for(int i=0;i<plat.lavaBlocks.size();i++){
-        plat.lavaBlocks.at(i).MVP=MVP*glm::translate(glm::mat4(1),plat.lavaBlocks.at(i).inicial_pos);
+    for (int i = 0; i < plat.lavaBlocks.size(); i++)
+    {
+        plat.lavaBlocks.at(i).MVP = MVP * glm::translate(glm::mat4(1), plat.lavaBlocks.at(i).inicial_pos);
     }
     //addPlataform(floor);
 };
@@ -121,23 +126,27 @@ bool Scenery::BlockOverEdgesPrataform()
     glm::vec3 direita = block.atual + glm::vec3(block.height / 4, 0, 0);
     glm::vec3 esquerda = block.atual + glm::vec3(-block.height / 4, 0, 0);
     //cout << block.tostring() << std::endl;
-    if (block.Collisions(obj) )
+    if (block.Collisions(obj))
     {
         if (block.rotate_lateral == glm::vec3(0, 1, 0))
-        {   
+        {
             return OntheBorders(frente, tras, glm::vec3(0, 0, block.height / 4));
         }
         else if (block.rotate_vertical == glm::vec3(0, 1, 0))
         {
             return OntheBorders(direita, esquerda, glm::vec3(block.height / 4, 0, 0));
-        }else{
-            if(onLavaBlock(block.atual)){
-                        block.burn=true;
-        cinzas.atual=block.atual;
-        cinzas.Model=glm::translate(glm::mat4(1),cinzas.atual);
+        }
+        else
+        {
+            if (onLavaBlock(block.atual))
+            {
+                block.burn = true;
+                cinzas.atual = block.atual;
+                cinzas.Model = glm::translate(glm::mat4(1), cinzas.atual);
             }
             return true;
-    }}
+        }
+    }
     if (block.rotate_lateral == glm::vec3(0, 1, 0))
     {
 
@@ -176,10 +185,11 @@ bool Scenery::OntheBorders(glm::vec3 a, glm::vec3 b, glm::vec3 move)
         return true;
     }
 
-    if(onLavaBlock(a) || onLavaBlock(b)){
-        block.burn=true;
-        cinzas.atual=block.atual;
-        cinzas.Model=glm::translate(glm::mat4(1),cinzas.atual);
+    if (onLavaBlock(a) || onLavaBlock(b))
+    {
+        block.burn = true;
+        cinzas.atual = block.atual;
+        cinzas.Model = glm::translate(glm::mat4(1), cinzas.atual);
         return true;
     }
     if (OverPlatformlying_down(a) && !OverPlatformlying_down(b))
@@ -195,15 +205,17 @@ bool Scenery::OntheBorders(glm::vec3 a, glm::vec3 b, glm::vec3 move)
     return false;
 }
 
-bool Scenery::onLavaBlock(glm::vec3 t){
-    for(Block b:plat.lavaBlocks){
+bool Scenery::onLavaBlock(glm::vec3 t)
+{
+    for (Block b : plat.lavaBlocks)
+    {
         //cout<<b.min.tostring()<<" "<<b.max.tostring()<<std::endl;
         if (t[0] > b.min.x && t[0] < b.max.x && t[2] > b.min.z && t[2] < b.max.z)
         {
             block.standUP();
-            block.Model=glm::translate(glm::mat4(1),b.atual);
-            block.MVP=Projection*View;
-            block.atual=b.atual+glm::vec3(0,b.max.y,0);
+            block.Model = glm::translate(glm::mat4(1), b.atual);
+            block.MVP = Projection * View;
+            block.atual = b.atual + glm::vec3(0, b.max.y, 0);
             return true;
         }
     }

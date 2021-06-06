@@ -564,6 +564,11 @@ int main()
         sai = true;
       }
       // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
+      printf("ENTROU");
+      atual_level.sheep.Model = atual_level.sheep.Translate(glm::vec3(2, 0, 2));
+      sai = true;
+      // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
+      //atual_level.sheep.Moves_to_block(block.atual);
     }
 
     glfwSwapBuffers(window);
@@ -651,7 +656,12 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     Cinzas c = atual_level.cinzas;
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    if (level == 14)
+    {
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor, atual_level.sheep);
+    }
+    else
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     atual_level.setCinzas(c);
     //cout << atual_level.block.tostring() << std::endl;
   }
@@ -661,7 +671,12 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     Cinzas c = atual_level.cinzas;
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    if (level == 14)
+    {
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor, atual_level.sheep);
+    }
+    else
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     atual_level.setCinzas(c);
   }
 }
