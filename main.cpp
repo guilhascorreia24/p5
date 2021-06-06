@@ -564,6 +564,7 @@ int main()
         //atual_level.sheep.Model = atual_level.sheep.Translate(glm::vec3(atual_level.block.atual[0] - atual_level.sheep.atual[0], 0, atual_level.block.atual[2] - atual_level.sheep.atual[2]));
         //atual_level.sheep.Moves_to_block(atual_level.block.atual);
         sai = true;
+        
       }
       // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
       // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
