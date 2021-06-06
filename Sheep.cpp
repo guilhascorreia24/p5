@@ -68,13 +68,3 @@ glm::mat4 Sheep::Rotation(float t, glm::vec3 r)
     this->head_mems.Model = head_mems.Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
     return Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
 }
-void Sheep::Reset(){
-    body.MVP = Scenery::Projection * Scenery::View;
-    head_mems.MVP = Scenery::Projection * Scenery::View;
-    MVP = Scenery::Projection * Scenery::View;
-    Model = glm::mat4(1);
-    body.Model = glm::mat4(1);
-    head_mems.Model = glm::mat4(1);
-    Model = Translate(inicial_pos);
-    Model = Rotation(-30,glm::vec3(0,1,0));
-}

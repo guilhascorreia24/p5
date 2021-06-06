@@ -566,9 +566,6 @@ int main()
         sai = true;
       }
       // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
-      printf("ENTROU");
-      atual_level.sheep.Model = atual_level.sheep.Translate(glm::vec3(2, 0, 2));
-      sai = true;
       // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
       //atual_level.sheep.Moves_to_block(block.atual);
     }
