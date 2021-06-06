@@ -300,18 +300,16 @@ int main()
   reposition(level2.block.inicial_pos, &level2);
   level3.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level3.block.inicial_pos, &level3);
-  level3.sheep.inicial_pos = glm::vec3(0, -6, 0);
+  level3.sheep.inicial_pos = glm::vec3(-5, -6, 5);
   level3.sheep.Model = level3.sheep.Translate(level3.sheep.inicial_pos);
-  level3.sheep.Model = level3.sheep.Rotation(90,glm::vec3(0,1,0));
-
+  level3.sheep.Model = level3.sheep.Rotation(-30,glm::vec3(0,1,0));
   atual_level = level1;
   //cout << atual_level.block.tostring() << std::endl;
 
   //atual_level.addObj(block);
   //timerun=glfwGetTime();
-
   MatrixID = glGetUniformLocation(shaderProgram, "MVP");
-
+  bool sai = false;
   while (!glfwWindowShouldClose(window))
   {
     processInput(window, colide);
@@ -366,10 +364,8 @@ int main()
       //printf("finish loadtext2\n");
       glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.head_mems.n_vertexes);
       //printf("sheep\n");
-
-      atual_level.sheep.Moves_Random(atual_level.plat);
+      //atual_level.sheep.Moves_Random(atual_level.plat);
     }
-
 
     //blocks lava
     if (atual_level.plat.lavaBlocks.size() != 0)
@@ -395,10 +391,16 @@ int main()
     colide = atual_level.BlockOverEdgesPrataform();
     
     //block fica deitado caso caia no chao
-    if (atual_level.block.Collide(atual_level.floor))
+    if (atual_level.block.Collide(atual_level.floor) && sai == false)
     {
       atual_level.block.standUP();
       atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
+      //atual_level.sheep.inicial_pos = glm::vec3(-5, -6, 5);
+      printf("ENTROU");
+      atual_level.sheep.Model = atual_level.sheep.Translate(glm::vec3(2, 0, 2));
+      sai = true;
+     // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
+      //atual_level.sheep.Moves_to_block(block.atual);
     }
 
 
@@ -458,6 +460,7 @@ void processInput(GLFWwindow *window, bool collide)
     mx = 10.0f;
     level = 14;
   }
+
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)

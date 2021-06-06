@@ -24,7 +24,7 @@ public:
     Sheep(const char *head_c,const char *head_t,const char *body_c,const char *body_t);
     Sheep(){}
     void Moves_Random(Plataform c);
-    void Moves_to_block();
+    void Moves_to_block(glm::vec3 t);
     glm::mat4 Translate(glm::vec3 g);
     glm::mat4 Rotation(float radius,glm::vec3 r);
 
