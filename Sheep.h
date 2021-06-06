@@ -26,6 +26,9 @@ public:
     void Moves_Random(Plataform c);
     void Moves_to_block(glm::vec3 t);
     glm::mat4 Translate(glm::vec3 g);
+    void Reset();
+    void setMVP(glm::mat4 g);
+    void setModel(glm::mat4 g);
     glm::mat4 Rotation(float radius,glm::vec3 r);
 
 };
