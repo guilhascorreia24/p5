@@ -347,10 +347,10 @@ int main()
   Cinzas cinzas = Cinzas("../../p5/objs/cinzas.obj", "../../p5/textures/cinzas.png");
   //printf("lava\n");
 
-  Block block3 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
+  Block block3 = Block("../../p5/objs/palha.obj", "../../p5/textures/palha.png");
   //printf("level3\n");
   Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
-  Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+  Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/relva.png");
   Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/pernas.png", "../../p5/objs/corpo.obj", "../../p5/textures/la_ovelha.jpg");
 
   //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
@@ -446,12 +446,7 @@ int main()
   reposition(level3.block.inicial_pos, &level3);
   level3.sheep.inicial_pos = glm::vec3(-5, -6, 5);
   level3.sheep.Model = level3.sheep.Translate(level3.sheep.inicial_pos);
-<<<<<<< HEAD
-  level3.sheep.Model = level3.sheep.Rotation(90, glm::vec3(0, 1, 0));
-
-=======
   level3.sheep.Model = level3.sheep.Rotation(-30,glm::vec3(0,1,0));
->>>>>>> 7517151e1b3f4e8744eac363a773b8ef0bf8c42c
   atual_level = level1;
   //cout << atual_level.block.tostring() << std::endl;
 
@@ -512,10 +507,6 @@ int main()
       //printf("finish loadtext2\n");
       glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.head_mems.n_vertexes);
       //printf("sheep\n");
-<<<<<<< HEAD
-=======
-      //atual_level.sheep.Moves_Random(atual_level.plat);
->>>>>>> 7517151e1b3f4e8744eac363a773b8ef0bf8c42c
     }
 
     //blocks lava
@@ -537,7 +528,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, atual_level.block.texture);*/
 
     //queda do block
-    if (!colide && !atual_level.block.Collisions(atual_level.objs))
+    if (!colide)
     {
       ////printf("oi\n");
       atual_level.block.Falling(glfwGetTime());
@@ -549,8 +540,9 @@ int main()
     colide = atual_level.BlockOverEdgesPrataform();
 
     //block fica deitado caso caia no chao
-    if (atual_level.block.Collide(atual_level.floor) && sai == false)
+    if (atual_level.block.Collide(atual_level.floor))
     {
+      colide=true;
       printf("floor\n");
       atual_level.block.standUP();
       atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
