@@ -24,8 +24,11 @@ void Sheep::Moves_Random(Plataform p)
     Model = Translate(glm::vec3(glfwGetTime(), 0, glfwGetTime()));
 }
 
-void Sheep::Moves_to_block()
+void Sheep::Moves_to_block(glm::vec3 t)
 {
+    float x = t[0] - this->atual[0];
+    float z = t[2] - this->atual[2];
+    this->Model = Translate(t);
 }
 
 glm::mat4 Sheep::Translate(glm::vec3 t)
