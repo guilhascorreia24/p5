@@ -351,7 +351,7 @@ int main()
 
   Block block3 = Block("../../p5/objs/palha.obj", "../../p5/textures/palha.png");
   //printf("level3\n");
-  Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
+  Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/dirt.jpg");
   Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/relva.png");
   Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/pernas.png", "../../p5/objs/corpo.obj", "../../p5/textures/la_ovelha.jpg");
 
@@ -448,7 +448,7 @@ int main()
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level1.block.inicial_pos, &level1);
-  level2.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
+  level2.block.inicial_pos = glm::vec3(-9.85, 0, -1.9033);
   reposition(level2.block.inicial_pos, &level2);
   level3.block.inicial_pos = glm::vec3(-6.063, 0, 0.081);
   reposition(level3.block.inicial_pos, &level3);
@@ -466,7 +466,7 @@ int main()
   {
     processInput(window, colide);
     moveLights();
-    glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+    glClearColor(0.0f, 0.7f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -597,7 +597,7 @@ int main()
   }
 
   glDeleteVertexArrays(1, &VAO);
-  for (int i = 0; i < 18; i++)
+  for (int i = 0; i < 20; i++)
   {
 
     glDeleteBuffers(1, &VBO[i]);
@@ -640,7 +640,7 @@ void processInput(GLFWwindow *window, bool collide)
   {
     Model = glm::mat4(1);
     atual_level = level3;
-    Scenery::View = glm::lookAt(glm::vec3(5, 15, 20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     atual_level = Scenery(Scenery::Projection * Scenery::View, level3.block, level3.plat, level3.floor, level3.sheep);
     //printf("level3\n");
     reposition(atual_level.block.inicial_pos, &atual_level);
