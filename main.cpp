@@ -507,6 +507,7 @@ int main()
       //printf("finish loadtext2\n");
       glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.head_mems.n_vertexes);
       //printf("sheep\n");
+      //atual_level.sheep.Moves_Random(atual_level.plat);
     }
 
     //blocks lava
