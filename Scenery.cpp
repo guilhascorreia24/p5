@@ -130,9 +130,14 @@ bool Scenery::BlockOverEdgesPrataform()
         else if (block.rotate_vertical == glm::vec3(0, 1, 0))
         {
             return OntheBorders(direita, esquerda, glm::vec3(block.height / 4, 0, 0));
-        }else
+        }else{
+            if(onLavaBlock(block.atual)){
+                        block.burn=true;
+        cinzas.atual=block.atual;
+        cinzas.Model=glm::translate(glm::mat4(1),cinzas.atual);
+            }
             return true;
-    }
+    }}
     if (block.rotate_lateral == glm::vec3(0, 1, 0))
     {
 

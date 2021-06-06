@@ -347,10 +347,10 @@ int main()
   Cinzas cinzas = Cinzas("../../p5/objs/cinzas.obj", "../../p5/textures/cinzas.png");
   //printf("lava\n");
 
-  Block block3 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
+  Block block3 = Block("../../p5/objs/palha.obj", "../../p5/textures/palha.png");
   //printf("level3\n");
   Plataform plat3 = Plataform("../../p5/objs/level3.obj", "../../p5/textures/vidro.png");
-  Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/cimento.png");
+  Plataform floor3 = Plataform("../../p5/objs/floor1.obj", "../../p5/textures/relva.png");
   Sheep sheep = Sheep("../../p5/objs/patas_cabeca.obj", "../../p5/textures/pernas.png", "../../p5/objs/corpo.obj", "../../p5/textures/la_ovelha.jpg");
 
   //cout << (sizeof(Texture) + sizeof(struct Vertex) * 2) << std::endl;
@@ -529,7 +529,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, atual_level.block.texture);*/
 
     //queda do block
-    if (!colide && !atual_level.block.Collisions(atual_level.objs))
+    if (!colide)
     {
       ////printf("oi\n");
       atual_level.block.Falling(glfwGetTime());
@@ -541,8 +541,9 @@ int main()
     colide = atual_level.BlockOverEdgesPrataform();
 
     //block fica deitado caso caia no chao
-    if (atual_level.block.Collide(atual_level.floor) && sai == false)
+    if (atual_level.block.Collide(atual_level.floor))
     {
+      colide=true;
       printf("floor\n");
       atual_level.block.standUP();
       atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
