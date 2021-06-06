@@ -35,6 +35,107 @@ glm::mat4 Model = glm::mat4(1.0f);
 float mx = 10.0f;
 bool b = true;
 glm::vec3 lightPos(10.0f, 5.0f, 5.0f);
+const char *fragmentShaderSource = "#version 330 core \n"
+                                   "out vec4 FragColor;\n"
+
+                                   "struct Material {\n"
+                                   "vec3 ambient;\n"
+                                   "vec3 diffuse;\n"
+                                   "vec3 specular;\n"
+                                   "float shininess;\n"
+                                   "};\n"
+
+                                   "struct DirLight {\n"
+                                   "vec3 direction;\n"
+                                  "vec3 position;\n"
+                                   "vec3 ambient;\n"
+                                   "vec3 diffuse;\n"
+                                   "vec3 specular;\n"
+                                   "};\n"
+
+                                   "struct PointLight {\n"
+                                   "vec3 position;\n"
+
+                                   "float constant;\n"
+                                   "float linear;\n"
+                                   "float quadratic;\n"
+
+                                   "vec3 ambient;\n"
+                                   "vec3 diffuse;\n"
+                                   "vec3 specular;\n"
+                                   "};\n"
+
+                                   //  "#define NR_POINT_LIGHTS 1\n"
+
+                                   "in vec3 FragPos;\n"
+                                   "in vec3 Normal;\n"
+                                   "in vec2 TexCoords;\n"
+                                    "uniform int nr_points;\n"
+                                   "uniform vec3 viewPos;\n"
+                                   "uniform DirLight dirLight;\n"
+                                   "uniform PointLight pointLights[7];\n"
+                                   "uniform Material material;\n"
+                                   "uniform sampler2D texture1;\n"
+
+                                   "vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);\n"
+                                   "vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);\n"
+
+                                   "void main()\n"
+                                   "{\n"
+                                   "vec3 norm = normalize(Normal);\n"
+                                   "vec3 viewDir = normalize(viewPos - FragPos);\n"
+
+                                   "vec3 result = CalcDirLight(dirLight, norm, viewDir);\n"
+                                   "for(int i = 0; i < nr_points; i++)\n"
+                                   "result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);\n"
+
+                                   "FragColor = texture(texture1, TexCoords) * vec4(result, 1.0);\n"
+                                   "}\n"
+
+                                   "vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)\n"
+                                   "{\n"
+                                   "   vec3 ambient = light.ambient * material.ambient;\n"
+                                   "   vec3 lightDir = normalize(light.position - FragPos);\n"
+                                   "   vec3 norm = normalize(Normal);\n"
+                                   "   float diff = max(dot(norm, lightDir), 0.0);\n"
+                                   "   vec3 diffuse = light.diffuse * (diff * material.diffuse);\n"
+                                   "   vec3 reflectDir = reflect(-lightDir, norm);\n"
+                                   "   float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
+                                   "   vec3 specular = light.specular * (spec * material.specular);\n"
+                                   "   vec3 result = ambient + diffuse + specular;\n"
+                                   //------------------
+                                  /* "vec3 lightDir = normalize(-light.direction);\n"
+                                   "float diff = max(dot(normal, lightDir), 0.0);\n"
+                                   "vec3 reflectDir = reflect(-lightDir, normal);\n"
+                                   "float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
+                                   "vec3 ambient = light.ambient  * material.ambient *vec3(texture(texture1,TexCoords));\n"
+                                   "vec3 diffuse = light.diffuse * diff * material.diffuse * vec3(texture(texture1,TexCoords));\n"
+                                   "vec3 specular = light.specular * spec * material.specular * vec3(texture(texture1,TexCoords));\n"
+                                   "return (ambient + diffuse + specular);\n"*/
+                                    "return result;\n"
+                                   "}\n"
+
+                                   "vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)\n"
+                                   "{\n"
+                                   "vec3 lightDir = normalize(light.position - fragPos);\n"
+
+                                   "float diff = max(dot(normal, lightDir), 0.0);\n"
+                                   "vec3 reflectDir = reflect(-lightDir, normal);\n"
+                                   "float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
+                                   "float distance = length(light.position - fragPos);\n"
+                                   "float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));  \n"
+                                  /* "vec3 ambient = light.ambient * vec3(texture(texture1,TexCoords));\n"
+                                   "vec3 diffuse = light.diffuse * diff * vec3(texture(texture1,TexCoords));\n"
+                                   "vec3 specular = light.specular * spec * vec3(texture(texture1,TexCoords));\n"*/
+                                   "vec3 ambient = light.ambient * material.ambient;\n"
+                                   "vec3 diffuse = light.diffuse * diff * material.diffuse;\n"
+                                   "vec3 specular = light.specular * spec * material.specular;\n"
+                                   "ambient *= attenuation;\n"
+                                   "diffuse *= attenuation;\n"
+                                   "specular *= attenuation;\n"
+                                   "return (ambient + diffuse + specular);\n"
+                                   "}\n\0";
+
 const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
                                  "layout (location = 1) in vec3 vertexColor;\n"
@@ -42,7 +143,7 @@ const char *vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 3) in vec3 aNormal;\n"
                                  "out vec3 fragmentColor;\n"
                                  "out vec3 FragPos;\n"
-                                 "out vec2 TexCoord;\n"
+                                 "out vec2 TexCoords;\n"
                                  "uniform mat4 MVP;\n"
                                  "out vec3 Normal;\n"
                                  "uniform mat4 Model;\n"
@@ -50,16 +151,21 @@ const char *vertexShaderSource = "#version 330 core\n"
                                  "{\n"
                                  "   gl_Position = MVP*Model * vec4(aPos, 1.0);\n"
                                  "   fragmentColor = vertexColor;\n"
-                                 "    TexCoord = aTexCoord;\n"
+                                 "    TexCoords = aTexCoord;\n"
                                  "   Normal = mat3(transpose(inverse(Model))) * aNormal;\n"
                                  "   FragPos = vec3(Model * vec4(aPos, 1.0));\n"
                                  "}\0";
-
+/*
 // declare and define fshader, position in color vector declaration
 // are RGBA from [0,1] simply in and out
 const char *fragmentShaderSource = "#version 330 core\n"
                                    "in vec3 FragPos;\n"
                                    "in vec3 Normal;\n"
+                                   "in vec2 TexCoords;\n"
+                                   "in vec4 FragPosLightSpace;\n"
+                                   "uniform vec3 lightPos;\n"
+                                   "uniform sampler2D diffuseTexture;\n"
+                                   "uniform sampler2D shadowMap;\n"
                                    // material properties
                                    "struct Material {\n"
                                    "  vec3 ambient;\n"
@@ -74,6 +180,23 @@ const char *fragmentShaderSource = "#version 330 core\n"
                                    "  vec3 specular;\n"
                                    "  vec3 position;\n"
                                    "};\n"
+                                   
+                                   "float ShadowCalculation(vec4 fragPosLightSpace)\n"
+                                   "{\n"
+                                   // perform perspective divide
+                                   "vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;\n"
+                                   // transform to [0,1] range
+                                   "projCoords = projCoords * 0.5 + 0.5;\n"
+                                   // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+                                   "float closestDepth = texture(shadowMap, projCoords.xy).r;\n"
+                                   // get depth of current fragment from light's perspective
+                                   "float currentDepth = projCoords.z;\n"
+                                   // check whether current frag pos is in shadow
+                                   "float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;\n"
+
+                                   "return shadow;\n"
+                                   "}\n"
+
                                    "uniform vec3 viewPos;\n"
                                    "uniform Light light;\n"
                                    "uniform Material material;\n"
@@ -108,9 +231,10 @@ const char *fragmentShaderSource = "#version 330 core\n"
                                    // specular illumination = light specular * material specular properties * spec coefficient
                                    "   vec3 specular = light.specular * (spec * material.specular);\n"
                                    // sum of components and fragment out
-                                   "   vec3 result = ambient + diffuse + specular;\n"
+                                   " float shadow = ShadowCalculation(FragPosLightSpace);\n"
+                                   "   vec3 result = ambient +(1.0 - shadow)+ diffuse + specular;\n"
                                    "   FragColor = texture(texture1, TexCoord)*vec4(result,1.0f) ;\n"
-                                   "}\n\0";
+                                   "}\n\0";*/
 float xpos1, ypos1;
 int main()
 {
@@ -188,6 +312,26 @@ int main()
   }
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+
+  const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+  unsigned int depthMapFBO;
+  glGenFramebuffers(1, &depthMapFBO);
+  // create depth texture
+  unsigned int depthMap;
+  glGenTextures(1, &depthMap);
+  glBindTexture(GL_TEXTURE_2D, depthMap);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  // attach depth texture as FBO's depth buffer
+  glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+  glDrawBuffer(GL_NONE);
+  glReadBuffer(GL_NONE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
   // delete shaders, we don't need them anymore
   Block block1 = Block("../../p5/objs/stoneBlock.obj", "../../p5/textures/predra.png");
   //printf("level1\n");
@@ -258,7 +402,7 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.cinzas.n_vertexes, level2.cinzas.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-  cout<<level2.plat.lavaBlocks.size()<<std::endl;
+  cout << level2.plat.lavaBlocks.size() << std::endl;
   for (int i = 7; i < 7 + level2.plat.lavaBlocks.size(); i++)
   {
     glGenBuffers(1, &VBO[i]);
@@ -292,7 +436,7 @@ int main()
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.sheep.head_mems.n_vertexes, level3.sheep.head_mems.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   ////printf("uuuu\n");
-  cout<<sizeof(VBO)<<std::endl;
+  cout << sizeof(VBO) << std::endl;
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level1.block.inicial_pos, &level1);
@@ -302,7 +446,7 @@ int main()
   reposition(level3.block.inicial_pos, &level3);
   level3.sheep.inicial_pos = glm::vec3(0, -6, 0);
   level3.sheep.Model = level3.sheep.Translate(level3.sheep.inicial_pos);
-  level3.sheep.Model = level3.sheep.Rotation(90,glm::vec3(0,1,0));
+  level3.sheep.Model = level3.sheep.Rotation(90, glm::vec3(0, 1, 0));
 
   atual_level = level1;
   //cout << atual_level.block.tostring() << std::endl;
@@ -324,19 +468,18 @@ int main()
     //atual_level.block.Model = atual_level.block.Model * glm::rotate(glm::mat4(1), glm::radians(1.0f), glm::vec3(1, 1, 0));
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    
+
     //plataforma
     atributes(atual_level.plat, VBO[1 + level]);
     atual_level.plat.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.plat.n_vertexes);
-    
+
     //chao
     atributes(atual_level.floor, VBO[2 + level]);
     atual_level.floor.loadTextures();
     glDrawArrays(GL_TRIANGLES, 0, atual_level.floor.n_vertexes);
-    
 
-    //block or cinzas 
+    //block or cinzas
     if (atual_level.block.burn && level == 3)
     {
       atributes(atual_level.cinzas, VBO[3 + level]);
@@ -354,22 +497,19 @@ int main()
     if (level == 14)
     {
       //printf("sheep ini draw\n");
-      atributes(atual_level.sheep.body, VBO[level+3]);
+      atributes(atual_level.sheep.body, VBO[level + 3]);
       //printf("finish atributes\n");
       atual_level.sheep.body.loadTextures();
       //printf("finish loadtext1\n");
       glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.body.n_vertexes);
       //printf("head:sheep\n");
-      atributes(atual_level.sheep.head_mems, VBO[level+ 4]);
+      atributes(atual_level.sheep.head_mems, VBO[level + 4]);
       //printf("finish atributes\n");
       atual_level.sheep.head_mems.loadTextures();
       //printf("finish loadtext2\n");
       glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.head_mems.n_vertexes);
       //printf("sheep\n");
-
-      atual_level.sheep.Moves_Random(atual_level.plat);
     }
-
 
     //blocks lava
     if (atual_level.plat.lavaBlocks.size() != 0)
@@ -382,6 +522,13 @@ int main()
       }
     }
 
+     // bind diffuse map
+        /*glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, atual_level.block.texture);
+        // bind specular map
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, atual_level.block.texture);*/
+
     //queda do block
     if (!colide && !atual_level.block.Collisions(atual_level.objs))
     {
@@ -393,14 +540,14 @@ int main()
       glfwSetTime(0);
     }
     colide = atual_level.BlockOverEdgesPrataform();
-    
+
     //block fica deitado caso caia no chao
     if (atual_level.block.Collide(atual_level.floor))
     {
+      printf("floor\n");
       atual_level.block.standUP();
       atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
     }
-
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -451,7 +598,7 @@ void processInput(GLFWwindow *window, bool collide)
     Model = glm::mat4(1);
     atual_level = level3;
     Scenery::View = glm::lookAt(glm::vec3(5, 15, 20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    atual_level = Scenery(Scenery::Projection * Scenery::View, level3.block, level3.plat, level3.floor,level3.sheep);
+    atual_level = Scenery(Scenery::Projection * Scenery::View, level3.block, level3.plat, level3.floor, level3.sheep);
     //printf("level3\n");
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
@@ -530,10 +677,72 @@ void atributes(Object g, unsigned int VBO)
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "material.specular"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
   glUniform1f(glGetUniformLocation(shaderProgram, "material.shininess"), 50.0f);
-  glUniform3fv(glGetUniformLocation(shaderProgram, "light.ambient"), 1, glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
-  glUniform3fv(glGetUniformLocation(shaderProgram, "light.diffuse"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-  glUniform3fv(glGetUniformLocation(shaderProgram, "light.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-  glUniform3fv(glGetUniformLocation(shaderProgram, "light.position"), 1, glm::value_ptr(lightPos));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "dirLight.ambient"), 1, glm::value_ptr(glm::vec3(0.2f, 0.2f, 0.2f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "dirLight.diffuse"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "dirLight.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "dirLight.direction"), 1, glm::value_ptr(normalize(-lightPos)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "dirLight.position"), 1, glm::value_ptr(lightPos));
+
+  if (level == 3)
+    glUniform1i(glGetUniformLocation(shaderProgram, "nr_points"), 7);
+  else
+    glUniform1i(glGetUniformLocation(shaderProgram, "nr_points"), 0);
+    
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[0].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(0).atual));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[0].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[0].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[0].specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[0].constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[0].linear"), 0.09f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[0].quadratic"), 0.032f);
+
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[1].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(1).atual));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[1].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[1].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[1].specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[1].constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[1].linear"), 0.09f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[1].quadratic"), 0.032f);
+
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[2].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(2).atual));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[2].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[2].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[2].specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[2].constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[2].linear"), 0.09f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[2].quadratic"), 0.032f);
+
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[3].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(3).atual));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[3].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[3].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[3].specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[3].constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[3].linear"), 0.09f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[3].quadratic"), 0.032f);
+
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[4].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(4).atual));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[4].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[4].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[4].specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[4].constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[4].linear"), 0.09f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[4].quadratic"), 0.032f);
+
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[5].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(5).atual));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[5].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[5].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[5].specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[5].constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[5].linear"), 0.09f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[5].quadratic"), 0.032f);
+
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[6].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(6).atual));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[6].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[6].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+  glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[6].specular"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[6].constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[6].linear"), 0.09f);
+  glUniform1f(glGetUniformLocation(shaderProgram, "pointLights[6].quadratic"), 0.032f);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   ////printf("after light and model\n");
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)0);
@@ -545,7 +754,7 @@ void atributes(Object g, unsigned int VBO)
   // normal attribute
   glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(struct VertexColorTexture), (void *)(8 * sizeof(float)));
   glEnableVertexAttribArray(3);
- // //printf("finish atributes\n");
+  // //printf("finish atributes\n");
 }
 
 void moveLights()
