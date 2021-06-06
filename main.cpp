@@ -446,12 +446,7 @@ int main()
   reposition(level3.block.inicial_pos, &level3);
   level3.sheep.inicial_pos = glm::vec3(-5, -6, 5);
   level3.sheep.Model = level3.sheep.Translate(level3.sheep.inicial_pos);
-<<<<<<< HEAD
-  level3.sheep.Model = level3.sheep.Rotation(90, glm::vec3(0, 1, 0));
-
-=======
   level3.sheep.Model = level3.sheep.Rotation(-30,glm::vec3(0,1,0));
->>>>>>> 7517151e1b3f4e8744eac363a773b8ef0bf8c42c
   atual_level = level1;
   //cout << atual_level.block.tostring() << std::endl;
 
@@ -512,10 +507,7 @@ int main()
       //printf("finish loadtext2\n");
       glDrawArrays(GL_TRIANGLES, 0, atual_level.sheep.head_mems.n_vertexes);
       //printf("sheep\n");
-<<<<<<< HEAD
-=======
       //atual_level.sheep.Moves_Random(atual_level.plat);
->>>>>>> 7517151e1b3f4e8744eac363a773b8ef0bf8c42c
     }
 
     //blocks lava
