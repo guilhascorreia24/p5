@@ -20,6 +20,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods);
 void reposition(glm::vec3 v, Scenery *l);
 void atributes(Object b, unsigned int VBO);
 void moveLights();
+void changeLevel(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
@@ -545,6 +546,7 @@ int main()
       colide = true;
       printf("floor\n");
       atual_level.block.standUP();
+      changeLevel(window);
       atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
       //atual_level.sheep.inicial_pos = glm::vec3(-5, -6, 5);
 
@@ -813,4 +815,44 @@ void moveLights()
   }
   mx = roundf(mx * 100) / 100;
   lightPos = glm::vec3((float)mx, 5.0f, 5.0f);
+}
+
+void changeLevel(GLFWwindow *window)
+{
+  // 1 ---- 0
+  // 2 ---- 3
+  // 3 ---- 14
+  Block b = atual_level.plat.final_;
+  if (atual_level.block.atual[0] > b.min.x && atual_level.block.atual[0] < b.max.x && atual_level.block.atual[2] > b.min.z && atual_level.block.atual[2] < b.max.z)
+  {
+    //Sleep(600);
+    if (level == 0)
+    {
+      Model = glm::mat4(1);
+      atual_level = level2;
+      Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+      atual_level.setCinzas(level2.cinzas);
+      reposition(atual_level.block.inicial_pos, &atual_level);
+      glfwSetTime(0);
+      mx = 10.0f;
+      level = 3;
+    }
+
+    else if (level == 3)
+    {
+      Model = glm::mat4(1);
+      atual_level = level3;
+      Scenery::View = glm::lookAt(glm::vec3(5, 15, 20), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+      atual_level = Scenery(Scenery::Projection * Scenery::View, level3.block, level3.plat, level3.floor, level3.sheep);
+      //printf("level3\n");
+      reposition(atual_level.block.inicial_pos, &atual_level);
+      glfwSetTime(0);
+      mx = 10.0f;
+      level = 14;
+    }
+
+    else if(level == 14)
+      glfwSetWindowShouldClose(window, true);
+  }
 }
