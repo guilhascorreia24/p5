@@ -363,13 +363,14 @@ int main()
   level2.setCinzas(cinzas);
   //printf("s3\n");
   level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3, sheep);
+  level3.block.setFarpas("../../p5/objs/pedacos_palha.obj","../../p5/textures/palha.png");
   //level3 = Scenery(Scenery::Projection * Scenery::View * Model, block3, plat3, floor3);
   //------------------------------------------------------------
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
   ////printf("oi\n");
-  unsigned int VBO[12 + level2.plat.lavaBlocks.size()];
+  unsigned int VBO[13 + level2.plat.lavaBlocks.size()];
   glGenBuffers(1, &VBO[0]);
   glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level1.block.n_vertexes, level1.block.vertex, GL_STATIC_DRAW);
@@ -437,6 +438,11 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, VBO[7 + level2.plat.lavaBlocks.size() + 4]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.sheep.head_mems.n_vertexes, level3.sheep.head_mems.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &VBO[19]);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO[19]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.block.farpas.n_vertexes, level3.block.farpas.vertex, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
   ////printf("uuuu\n");
   cout << sizeof(VBO) << std::endl;
 
@@ -455,6 +461,7 @@ int main()
   //atual_level.addObj(block);
   //timerun=glfwGetTime();
   MatrixID = glGetUniformLocation(shaderProgram, "MVP");
+  bool colide_floor=false;
   while (!glfwWindowShouldClose(window))
   {
     processInput(window, colide);
@@ -486,10 +493,20 @@ int main()
     }
     else
     {
+      if(level==14 && colide_floor){
+        atributes(atual_level.block.farpas, VBO[19]);
+        atual_level.block.farpas.loadTextures();
+        glDrawArrays(GL_TRIANGLES, 0, atual_level.block.farpas.n_vertexes);
+        atual_level.block.farpas.Model=glm::translate(glm::mat4(1),atual_level.block.atual);
+        atual_level.block.farpas.MVP=Scenery::Projection*Scenery::View;
+      }
+      else{
       atributes(atual_level.block, VBO[0 + level]);
       atual_level.block.loadTextures();
       glDrawArrays(GL_TRIANGLES, 0, atual_level.block.n_vertexes);
+      }
     }
+
 
     //sheep
     if (level == 14)
@@ -566,9 +583,13 @@ int main()
         sai = true;
         
       }
+      colide_floor=true;
       // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
       // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
       //atual_level.sheep.Moves_to_block(block.atual);
+    }
+    else{
+      colide_floor=false;
     }
 
     glfwSwapBuffers(window);

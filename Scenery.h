@@ -29,6 +29,7 @@ public:
     Plataform sky;
     Block block;
     Sheep sheep;
+
     Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor);
     Scenery(glm::mat4 MVP, Block b, Plataform p,Plataform floor, Sheep s);
     Scenery() {}

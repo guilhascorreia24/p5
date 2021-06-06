@@ -13,6 +13,7 @@ using namespace std;
 #include <glm/gtx/io.hpp>
 #include <vector>
 #include "Object.h"
+#include "body.h"
 class Block : public Object
 {
     float time = 0, vel = 0;
@@ -20,6 +21,7 @@ class Block : public Object
 public:
     glm::vec3 rotations;
     glm::vec3 rotate_vertical,rotate_lateral;
+    Body farpas;
     bool burn=false;
     Block(const char *f,const char *t);
     Block(){};
@@ -33,6 +35,7 @@ public:
         return atual[0]==b.atual[0] && atual[1]==b.atual[1] && atual[2]==b.atual[2];
     }
     void setWalk(float x){this->walk=x;}
+    void setFarpas(const char *c,const char *t);
 
     private:
         float walk;

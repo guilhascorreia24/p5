@@ -235,3 +235,9 @@ Block::Block(struct Vertex c, struct Vertex min, struct Vertex max)
     rotate_vertical = glm::vec3(0, 1, 0);
     rotate_lateral = glm::vec3(0, 0, 1);
 }
+
+void Block::setFarpas(const char *c,const char *t){
+    this->farpas=Body(c,t);
+    this->farpas.MVP=Scenery::Projection*Scenery::View;
+    this->farpas.Model=glm::mat4(1);
+}

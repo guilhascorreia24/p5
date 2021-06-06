@@ -74,7 +74,7 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f)
     cinzas.MVP = Projection * View;
     //block.burn=false;
     //addPlataform(floor);
-};
+}
 
 Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f, Sheep s)
 {
@@ -102,8 +102,11 @@ Scenery::Scenery(glm::mat4 MVP, Block b, Plataform p, Plataform f, Sheep s)
     {
         plat.lavaBlocks.at(i).MVP = MVP * glm::translate(glm::mat4(1), plat.lavaBlocks.at(i).inicial_pos);
     }
+
+    block.farpas.MVP=MVP;
+    block.farpas.Model=glm::mat4(1);
     //addPlataform(floor);
-};
+}
 bool Scenery::BlockOverEdgesPrataform()
 {
     Block o;
