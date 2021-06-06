@@ -23,7 +23,14 @@ void Sheep::Moves_Random(Plataform p)
 
     Model = Translate(glm::vec3(glfwGetTime(), 0, glfwGetTime()));
 }
-
+void Sheep::setMVP(glm::mat4 MVP){
+    body.MVP=MVP;
+    head_mems.MVP=MVP;
+}
+void Sheep::setModel(glm::mat4 g){
+    body.Model=g;
+    head_mems.Model=g;
+}
 void Sheep::Moves_to_block(glm::vec3 t)
 {
     float x = t[0] - this->atual[0];
@@ -33,6 +40,7 @@ void Sheep::Moves_to_block(glm::vec3 t)
 
 glm::mat4 Sheep::Translate(glm::vec3 t)
 {
+    atual+=t;
     this->body.Model = body.Model * glm::translate(glm::mat4(1), t);
     this->head_mems.Model = head_mems.Model * glm::translate(glm::mat4(1), t);
     return Model * glm::translate(glm::mat4(1), t);
@@ -43,4 +51,14 @@ glm::mat4 Sheep::Rotation(float t, glm::vec3 r)
     this->body.Model = body.Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
     this->head_mems.Model = head_mems.Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
     return Model * glm::rotate(glm::mat4(1), glm::radians(t), r);
+}
+void Sheep::Reset(){
+    body.MVP = Scenery::Projection * Scenery::View;
+    head_mems.MVP = Scenery::Projection * Scenery::View;
+    MVP = Scenery::Projection * Scenery::View;
+    Model = glm::mat4(1);
+    body.Model = glm::mat4(1);
+    head_mems.Model = glm::mat4(1);
+    Model = Translate(inicial_pos);
+    Model = Rotation(-30,glm::vec3(0,1,0));
 }

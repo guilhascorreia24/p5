@@ -47,7 +47,7 @@ const char *fragmentShaderSource = "#version 330 core \n"
 
                                    "struct DirLight {\n"
                                    "vec3 direction;\n"
-                                  "vec3 position;\n"
+                                   "vec3 position;\n"
                                    "vec3 ambient;\n"
                                    "vec3 diffuse;\n"
                                    "vec3 specular;\n"
@@ -70,7 +70,7 @@ const char *fragmentShaderSource = "#version 330 core \n"
                                    "in vec3 FragPos;\n"
                                    "in vec3 Normal;\n"
                                    "in vec2 TexCoords;\n"
-                                    "uniform int nr_points;\n"
+                                   "uniform int nr_points;\n"
                                    "uniform vec3 viewPos;\n"
                                    "uniform DirLight dirLight;\n"
                                    "uniform PointLight pointLights[7];\n"
@@ -104,7 +104,7 @@ const char *fragmentShaderSource = "#version 330 core \n"
                                    "   vec3 specular = light.specular * (spec * material.specular);\n"
                                    "   vec3 result = ambient + diffuse + specular;\n"
                                    //------------------
-                                  /* "vec3 lightDir = normalize(-light.direction);\n"
+                                   /* "vec3 lightDir = normalize(-light.direction);\n"
                                    "float diff = max(dot(normal, lightDir), 0.0);\n"
                                    "vec3 reflectDir = reflect(-lightDir, normal);\n"
                                    "float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
@@ -112,7 +112,7 @@ const char *fragmentShaderSource = "#version 330 core \n"
                                    "vec3 diffuse = light.diffuse * diff * material.diffuse * vec3(texture(texture1,TexCoords));\n"
                                    "vec3 specular = light.specular * spec * material.specular * vec3(texture(texture1,TexCoords));\n"
                                    "return (ambient + diffuse + specular);\n"*/
-                                    "return result;\n"
+                                   "return result;\n"
                                    "}\n"
 
                                    "vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)\n"
@@ -124,7 +124,7 @@ const char *fragmentShaderSource = "#version 330 core \n"
                                    "float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
                                    "float distance = length(light.position - fragPos);\n"
                                    "float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));  \n"
-                                  /* "vec3 ambient = light.ambient * vec3(texture(texture1,TexCoords));\n"
+                                   /* "vec3 ambient = light.ambient * vec3(texture(texture1,TexCoords));\n"
                                    "vec3 diffuse = light.diffuse * diff * vec3(texture(texture1,TexCoords));\n"
                                    "vec3 specular = light.specular * spec * vec3(texture(texture1,TexCoords));\n"*/
                                    "vec3 ambient = light.ambient * material.ambient;\n"
@@ -446,7 +446,7 @@ int main()
   reposition(level3.block.inicial_pos, &level3);
   level3.sheep.inicial_pos = glm::vec3(-5, -6, 5);
   level3.sheep.Model = level3.sheep.Translate(level3.sheep.inicial_pos);
-  level3.sheep.Model = level3.sheep.Rotation(-30,glm::vec3(0,1,0));
+  level3.sheep.Model = level3.sheep.Rotation(-30, glm::vec3(0, 1, 0));
   atual_level = level1;
   //cout << atual_level.block.tostring() << std::endl;
 
@@ -520,8 +520,8 @@ int main()
       }
     }
 
-     // bind diffuse map
-        /*glActiveTexture(GL_TEXTURE0);
+    // bind diffuse map
+    /*glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, atual_level.block.texture);
         // bind specular map
         glActiveTexture(GL_TEXTURE1);
@@ -542,7 +542,7 @@ int main()
     //block fica deitado caso caia no chao
     if (atual_level.block.Collide(atual_level.floor))
     {
-      colide=true;
+      colide = true;
       printf("floor\n");
       atual_level.block.standUP();
       atual_level.block.MVP = glm::rotate(atual_level.block.MVP, glm::radians(90.0f), glm::vec3(0, 0, 1));
@@ -550,7 +550,7 @@ int main()
       printf("ENTROU");
       atual_level.sheep.Model = atual_level.sheep.Translate(glm::vec3(2, 0, 2));
       sai = true;
-     // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
+      // atual_level.sheep.Model = atual_level.sheep.Rotation(-30,glm::vec3(0,1,0));
       //atual_level.sheep.Moves_to_block(block.atual);
     }
 
@@ -610,7 +610,6 @@ void processInput(GLFWwindow *window, bool collide)
     mx = 10.0f;
     level = 14;
   }
-
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -638,7 +637,12 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     Cinzas c = atual_level.cinzas;
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    if (level == 14)
+    {
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor, atual_level.sheep);
+    }
+    else
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     atual_level.setCinzas(c);
     //cout << atual_level.block.tostring() << std::endl;
   }
@@ -648,7 +652,12 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     Cinzas c = atual_level.cinzas;
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    if (level == 14)
+    {
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor, atual_level.sheep);
+    }
+    else
+      atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     atual_level.setCinzas(c);
   }
 }
@@ -693,7 +702,7 @@ void atributes(Object g, unsigned int VBO)
     glUniform1i(glGetUniformLocation(shaderProgram, "nr_points"), 7);
   else
     glUniform1i(glGetUniformLocation(shaderProgram, "nr_points"), 0);
-    
+
   glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[0].position"), 1, glm::value_ptr(level2.plat.lavaBlocks.at(0).atual));
   glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[0].ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
   glUniform3fv(glGetUniformLocation(shaderProgram, "pointLights[0].diffuse"), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
