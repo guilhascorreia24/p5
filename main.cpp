@@ -405,7 +405,7 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level2.cinzas.n_vertexes, level2.cinzas.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
-  cout << level2.plat.lavaBlocks.size() << std::endl;
+  //cout << level2.plat.lavaBlocks.size() << std::endl;
   for (int i = 7; i < 7 + level2.plat.lavaBlocks.size(); i++)
   {
     glGenBuffers(1, &VBO[i]);
@@ -444,7 +444,7 @@ int main()
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct VertexColorTexture) * level3.block.farpas.n_vertexes, level3.block.farpas.vertex, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   ////printf("uuuu\n");
-  cout << sizeof(VBO) << std::endl;
+  //cout << sizeof(VBO) << std::endl;
 
   level1.block.inicial_pos = glm::vec3(-4.85, 0, -1.9033);
   reposition(level1.block.inicial_pos, &level1);

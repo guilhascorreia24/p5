@@ -49,7 +49,7 @@ void Plataform::setBlocks()
         superiorFaces(f);
     }
     findFinal();
-    cout << blocks.size() << std::endl;
+    //cout << blocks.size() << std::endl;
 }
 
 void Plataform::superiorFaces(struct Faces face)

@@ -33,12 +33,12 @@ void Sheep::setModel(glm::mat4 g){
 }
 void Sheep::Moves_to_block(glm::vec3 t)
 {
-    cout<<t<<std::endl;
-    cout<<atual<<std::endl;
+    //cout<<t<<std::endl;
+    //cout<<atual<<std::endl;
     float x = t[0] - this->atual[0];
     float z = t[2] - this->atual[2];
-    cout<<x<<std::endl;
-    cout<<z<<std::endl;
+    //cout<<x<<std::endl;
+    //cout<<z<<std::endl;
     this->Model = Translate(glm::vec3(t[0] - atual[0], 0, t[2] - atual[2]));
 }
 
