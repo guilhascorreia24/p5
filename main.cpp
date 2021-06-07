@@ -613,41 +613,6 @@ void processInput(GLFWwindow *window, bool collide)
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   glfwSetKeyCallback(window, moveBlock);
-  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && level != 0)
-  {
-    //Model = glm::mat4(1);
-    atual_level = level1;
-    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
-    reposition(atual_level.block.inicial_pos, &atual_level);
-    glfwSetTime(0);
-    mx = 10.0f;
-    level = 0;
-  }
-  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && level != 3)
-  {
-    Model = glm::mat4(1);
-    atual_level = level2;
-    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
-    atual_level.setCinzas(level2.cinzas);
-    reposition(atual_level.block.inicial_pos, &atual_level);
-    glfwSetTime(0);
-    mx = 10.0f;
-    level = 3;
-  }
-  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && level != 14)
-  {
-    Model = glm::mat4(1);
-    atual_level = level3;
-    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    atual_level = Scenery(Scenery::Projection * Scenery::View, level3.block, level3.plat, level3.floor, level3.sheep);
-    //printf("level3\n");
-    reposition(atual_level.block.inicial_pos, &atual_level);
-    glfwSetTime(0);
-    mx = 10.0f;
-    level = 14;
-  }
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -672,7 +637,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     reposition(atual_level.block.inicial_pos, &atual_level);
     glfwSetTime(0);
   }
-  if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+  if (key == GLFW_KEY_C && action == GLFW_PRESS)
   {
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(0, 15, 0.01), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -687,7 +652,7 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     //cout << atual_level.block.tostring() << std::endl;
   }
 
-  if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+  if (key == GLFW_KEY_X && action == GLFW_PRESS)
   {
     //Model = glm::mat4(1);
     Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -699,6 +664,42 @@ void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
     else
       atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
     atual_level.setCinzas(c);
+  }
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS && level != 0)
+  {
+    //Model = glm::mat4(1);
+    atual_level = level1;
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    reposition(atual_level.block.inicial_pos, &atual_level);
+    glfwSetTime(0);
+    mx = 10.0f;
+    level = 0;
+  }
+  if (key == GLFW_KEY_2 && action == GLFW_PRESS && level != 3)
+  {
+    Model = glm::mat4(1);
+    atual_level = level2;
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, atual_level.block, atual_level.plat, atual_level.floor);
+    atual_level.setCinzas(level2.cinzas);
+    reposition(atual_level.block.inicial_pos, &atual_level);
+    glfwSetTime(0);
+    mx = 10.0f;
+    level = 3;
+  }
+  if (key == GLFW_KEY_3 && action == GLFW_PRESS && level != 14)
+  {
+    Model = glm::mat4(1);
+    atual_level = level3;
+    Scenery::View = glm::lookAt(glm::vec3(5, 10, 15), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    atual_level = Scenery(Scenery::Projection * Scenery::View, level3.block, level3.plat, level3.floor, level3.sheep);
+    //printf("level3\n");
+    reposition(atual_level.block.inicial_pos, &atual_level);
+    glfwSetTime(0);
+    mx = 10.0f;
+    level = 14;
+    sai = false;
   }
 }
 void reposition(glm::vec3 v, Scenery *l)
