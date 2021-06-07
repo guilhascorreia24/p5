@@ -464,6 +464,7 @@ int main()
   bool colide_floor=false;
   while (!glfwWindowShouldClose(window))
   {
+
     processInput(window, colide);
     moveLights();
     glClearColor(0.0f, 0.7f, 1.0f, 0.0f);
@@ -622,7 +623,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void moveBlock(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-  if ((key == GLFW_KEY_DOWN || key == GLFW_KEY_LEFT || key == GLFW_KEY_UP || key == GLFW_KEY_RIGHT) && action == GLFW_PRESS && colide)
+  if ((key == GLFW_KEY_DOWN || key == GLFW_KEY_LEFT || key == GLFW_KEY_UP || key == GLFW_KEY_RIGHT) && action == GLFW_PRESS && colide && !atual_level.block.Collide(atual_level.floor))
   {
     atual_level.block.Moves(key);
   }
